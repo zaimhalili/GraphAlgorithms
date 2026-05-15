@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Kavoon&display=swap');
+
+*{
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Kavoon", sans-serif;
+    border: none;
+}
+
+button{
+    cursor: pointer;
+}
+
+:root{
+    --dark:#03045e;
+    --mid:#0077b6;
+    --main: #00b4d8;
+    --light: #caf0f8;
+}
+
+body{
+    background-color: var(--dark);
+    display: flex;
+    align-items: center;
+    padding: 2rem 8rem;
+    gap: 4rem;
+    justify-content: space-between;
+}
+
+.choices{
+    display: flex;
+    gap: 3rem;
+}
+
+.choices button{
+    font-size: 2rem;
+    background-color: var(--mid);
+    color: var(--light);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    transition: 0.1s ease-in-out;
+    box-shadow: 0px 7px 0px white;
+}
+
+.choices button:hover{
+    background-color: var(--main);
+    /* scale: 1.05; */
+}
+
+.choices button:active{
+    translate: 0px 7px;
+    box-shadow: none;
+}
+
+.choices button.selectedButton{
+    background-color: var(--main);
+}
+
+.map{
+    background-color: var(--mid);
+    height: 600px;
+    width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.map .block.wall{
+    background-color: var(--dark);
+}
+
+.map .block.path{
+    background-color: darkred;
+}
+
+.block{
+    background: var(--mid);
+    height: 30px;
+    width: 30px;
+    border: 1px solid #424364;
+    transition: 0.1s ease-in-out;
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+    cursor: pointer;
+}
+
+.block:hover{
+    scale: 1.1;
+    background: var(--mid);
+}
