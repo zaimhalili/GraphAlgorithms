@@ -12,10 +12,6 @@ let matrix = [
     [[1, 6], [3, 10]]
 ];
 
-let row = 0;
-let column = 0;
-let depth = 0;
-
 function createMapBlocks(numberOfBlocks) {
     for (let i = 0; i < numberOfBlocks; i++) {
         const newDiv = document.createElement("div");
@@ -26,16 +22,10 @@ function createMapBlocks(numberOfBlocks) {
         if (currentDiv) {
             currentDiv.before(newDiv);
         }
-        // newDiv.innerText = matrix[row][column].toString();
-        // column++;
-        // if (column == 5) {
-        //     row++;
-        //     column = 0;
-        // }
     }
 }
 
-createMapBlocks(25);
+// createMapBlocks(25);
 
 class MinHeap {
     constructor() {
@@ -138,6 +128,6 @@ function selectAlgorithm(name) {
     }
 }
 
-let result = dijkstra(matrix, 4);
+let result = dijkstra(matrix, 0);
 console.log(result);
 

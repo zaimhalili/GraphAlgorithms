@@ -25,6 +25,7 @@ body{
     padding: 2rem 8rem;
     gap: 4rem;
     justify-content: space-between;
+    flex-direction: column;
 }
 
 .choices{
@@ -58,35 +59,32 @@ body{
 
 .map{
     background-color: var(--mid);
-    height: 250px;
-    width: 250px;
+    height: 500px;
+    width: 700px;
     display: flex;
     flex-wrap: wrap;
     border-radius: 5px;
     overflow: hidden;
+    gap: 30px;
 }
 
-.map .block.wall{
-    background-color: var(--dark);
+.circle{
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+    background-color: var(--main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.map .block.path{
-    background-color: rgb(61, 0, 0);
+.pair{
+    display: flex;
+    gap: 30px;
 }
 
-.block{
-    background: var(--mid);
-    height: 50px;
-    width: 50px;
-    border: 1px solid #424364;
-    transition: 0.1s ease-in-out;
-    text-align: center;
-    color: white;
-    font-family: sans-serif;
-    cursor: pointer;
-}
-
-.block:hover{
-    scale: 1.1;
-    background: var(--mid);
+.column{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }

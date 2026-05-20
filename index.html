@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Percorsi</title>
     <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
     <!-- Choices -->
     <div class="choices">
@@ -13,8 +15,22 @@
         <button type="button" id="astar" onclick="selectAlgorithm('Astar')">A*</button>
     </div>
     <main class="map">
-        <div id="mapRef"></div>
+        <!-- <div id="mapRef"></div> -->
+        <div class="circle">0</div>
+        <div class="column">
+            <div class="pair">
+                <div class="circle">1</div>
+                <div class="circle">4</div>
+            </div>
+            <div class="pair">
+                <div class="circle">2</div>
+                <div class="circle">3</div>
+            </div>
+        </div>
+
+
     </main>
     <script src="./script.js"></script>
 </body>
+
 </html>
