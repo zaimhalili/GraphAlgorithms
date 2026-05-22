@@ -12,18 +12,18 @@ let matrix = [
     [[1, 6], [3, 10]]
 ];
 
-function createMapBlocks(numberOfBlocks) {
-    for (let i = 0; i < numberOfBlocks; i++) {
-        const newDiv = document.createElement("div");
-        newDiv.classList.add("block");
+// function createMapBlocks(numberOfBlocks) {
+//     for (let i = 0; i < numberOfBlocks; i++) {
+//         const newDiv = document.createElement("div");
+//         newDiv.classList.add("block");
 
-        const currentDiv = document.getElementById("mapRef");
+//         const currentDiv = document.getElementById("mapRef");
 
-        if (currentDiv) {
-            currentDiv.before(newDiv);
-        }
-    }
-}
+//         if (currentDiv) {
+//             currentDiv.before(newDiv);
+//         }
+//     }
+// }
 
 // createMapBlocks(25);
 

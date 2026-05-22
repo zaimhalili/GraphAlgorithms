@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Percorsi</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -14,19 +15,31 @@
         <button type="button" id="dijkstra" onclick="selectAlgorithm('Dijkstra')">Dijkstra</button>
         <button type="button" id="astar" onclick="selectAlgorithm('Astar')">A*</button>
     </div>
-    <main class="map">
+    <main class="map flex items-center justify-center gap-10">
         <!-- <div id="mapRef"></div> -->
-        <div class="circle">0</div>
-        <div class="column">
-            <div class="pair">
-                <div class="circle">1</div>
-                <div class="circle">4</div>
+        <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">0
+            <!-- <div class="h-1 w-20 bg-[var(--main)] absolute -right-full bg-white -rotate-[30deg]"></div> -->
+        </div>
+
+        <div class="column flex gap-20 flex-col">
+            <div class="pair flex gap-20">
+                <div class=" h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center">
+                    1
+                </div>
+                <div class=" h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                    4
+                </div>
             </div>
-            <div class="pair">
-                <div class="circle">2</div>
-                <div class="circle">3</div>
+            <div class="pair flex gap-20">
+                <div class=" h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                    2
+                </div>
+                <div class=" h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                    3
+                </div>
             </div>
         </div>
+
 
 
     </main>
