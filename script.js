@@ -12,21 +12,6 @@ let matrix = [
     [[1, 6], [3, 10]]
 ];
 
-// function createMapBlocks(numberOfBlocks) {
-//     for (let i = 0; i < numberOfBlocks; i++) {
-//         const newDiv = document.createElement("div");
-//         newDiv.classList.add("block");
-
-//         const currentDiv = document.getElementById("mapRef");
-
-//         if (currentDiv) {
-//             currentDiv.before(newDiv);
-//         }
-//     }
-// }
-
-// createMapBlocks(25);
-
 class MinHeap {
     constructor() {
         this.heap = [];
@@ -75,6 +60,10 @@ class MinHeap {
     }
 }
 //Driver Code Ends
+function colorNode(node){
+    let nodeElement = document.getElementsByClassName("circle")[node];
+    nodeElement.classList.add("visited");
+}
 
 function dijkstra(adj, src) {
 
@@ -103,6 +92,9 @@ function dijkstra(adj, src) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 pq.push([dist[v], v]);
+                setTimeout(() => {
+                    colorNode(v);
+                }, 1000);
             }
         }
     }
@@ -129,5 +121,5 @@ function selectAlgorithm(name) {
 }
 
 let result = dijkstra(matrix, 0);
-console.log(result);
+console.log(result[4]);
 

@@ -62,3 +62,8 @@ body{
     height: 500px;
     width: 700px;
 }
+
+.visited{
+    background-color: #03045e !important;
+    color: white;
+}
