@@ -17,25 +17,36 @@
     </div>
     <main class="map flex items-center justify-center gap-10">
         <!-- <div id="mapRef"></div> -->
-        <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">0
-            <!-- <div class="h-1 w-20 bg-[var(--main)] absolute -right-full bg-white -rotate-[30deg]"></div> -->
+        <div
+            class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10">
+            0
         </div>
 
         <div class="column flex gap-20 flex-col">
             <div class="pair flex gap-20">
-                <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center">
+                <div
+                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">
                     1
+                    <div class="absolute w-32 h-1 bg-[var(--main)] -left-full bottom-0 rotate-[-35deg]"></div>
+                    <div class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90"></div>
                 </div>
-                <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                <div
+                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">
                     4
+                    <div class="absolute w-28 h-1 bg-[var(--main)] -left-full"></div>
+                    <div class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90"></div>
                 </div>
             </div>
             <div class="pair flex gap-20">
-                <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                <div
+                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">
                     2
+                    <div class="absolute w-28 h-1 bg-[var(--main)] -left-full top-0 rotate-[35deg]"></div>
                 </div>
-                <div class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center ">
+                <div
+                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible">
                     3
+                    <div class="absolute w-24 h-1 bg-[var(--main)] -left-full"></div>
                 </div>
             </div>
         </div>

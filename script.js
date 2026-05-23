@@ -60,7 +60,7 @@ class MinHeap {
     }
 }
 //Driver Code Ends
-function colorNode(node){
+function colorNode(node) {
     let nodeElement = document.getElementsByClassName("circle")[node];
     nodeElement.classList.add("visited");
 }
@@ -92,9 +92,6 @@ function dijkstra(adj, src) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 pq.push([dist[v], v]);
-                setTimeout(() => {
-                    colorNode(v);
-                }, 1000);
             }
         }
     }
