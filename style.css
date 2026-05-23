@@ -12,14 +12,14 @@ button{
 }
 
 :root{
-    --dark:#03045e;
-    --mid:#0077b6;
-    --main: #00b4d8;
+    --dark:#000120;
+    --mid:#00293f;
+    --main: orange;
     --light: #caf0f8;
 }
 
 body{
-    background-color: var(--dark);
+    background-color: var(--light);
     display: flex;
     align-items: center;
     padding: 2rem 8rem;
@@ -45,6 +45,7 @@ body{
 
 .choices button:hover{
     background-color: var(--main);
+    color: var(--dark);
     /* scale: 1.05; */
 }
 
