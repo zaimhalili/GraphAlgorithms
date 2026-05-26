@@ -1,6 +1,6 @@
 class Graph {
-    constructor() {
-
+    constructor(numberOfNodes) {
+        this.numberOfNodes = numberOfNodes;
     }
 }
 
@@ -59,9 +59,17 @@ class MinHeap {
         return this.heap.length === 0;
     }
 }
+
 //Driver Code Ends
-function colorNode(node) {
-    let nodeElement = document.getElementsByClassName("circle")[node];
+function colorNode(nodeNumber) {
+    let classNumber = "";
+    if (nodeNumber === 0) classNumber = "zero"
+    else if (nodeNumber === 1) classNumber = "one";
+    else if (nodeNumber === 2) classNumber = "two";
+    else if (nodeNumber === 3) classNumber = "three";
+    else if (nodeNumber === 4) classNumber = "four";
+
+    let nodeElement = document.getElementsByClassName(classNumber)[0];
     nodeElement.classList.add("visited");
 }
 
@@ -104,6 +112,7 @@ function astar() {
 
 }
 
+
 function selectAlgorithm(name) {
     document.getElementById("dijkstra").classList.remove("selectedButton");
     document.getElementById("astar").classList.remove("selectedButton");
@@ -111,12 +120,16 @@ function selectAlgorithm(name) {
     if (name === "Dijkstra") {
         document.getElementById("dijkstra").classList.add("selectedButton");
         dijkstra(matrix, 0);
+
+        let result = dijkstra(matrix, 0);
+        let inputNumber = document.getElementById("numSearch").value;
+        document.getElementById("percorso").innerText = "Percorso più corto: " + result[inputNumber];
+
+        colorNode(inputNumber)
+
     } else if (name === "Astar") {
         document.getElementById("astar").classList.add("selectedButton");
         astar();
     }
 }
-
-let result = dijkstra(matrix, 0);
-console.log(result[4]);
 

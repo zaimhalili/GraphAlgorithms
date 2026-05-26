@@ -15,17 +15,22 @@
         <button type="button" id="dijkstra" onclick="selectAlgorithm('Dijkstra')">Dijkstra</button>
         <button type="button" id="astar" onclick="selectAlgorithm('Astar')">A*</button>
     </div>
+    <div>
+        <label for="numSearch" class="text-2xl">Numero da cercare: </label>
+        <input type="number" name="numSearch" id="numSearch" min="0" max="4" class="text-3xl p-3 rounded-md" value="0">
+    </div>
+    <p id="percorso" class="text-[var(--main)] text-3xl font-light">Percorso più corto: </p>
     <main class="map flex items-center justify-center gap-10">
         <!-- <div id="mapRef"></div> -->
         <div
-            class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
+            class="circle zero h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
             0
         </div>
 
         <div class="column flex gap-20 flex-col">
             <div class="pair flex gap-20">
                 <div
-                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    class="circle one h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                     1
                     <div class="absolute w-32 h-1 bg-[var(--main)] -left-full bottom-0 rotate-[-35deg]"></div>
                     <div class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90"></div>
@@ -33,7 +38,7 @@
                     <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
                 </div>
                 <div
-                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    class="circle four h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                     4
                     <div class="absolute w-28 h-1 bg-[var(--main)] -left-full"></div>
                     <div class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90"></div>
@@ -42,13 +47,13 @@
             </div>
             <div class="pair flex gap-20">
                 <div
-                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    class="circle two h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                     2
                     <div class="absolute w-28 h-1 bg-[var(--main)] -left-full top-0 rotate-[35deg]"></div>
                     <p class="absolute -left-8 top-1 text-yellow-500 text-lg">8</p>
                 </div>
                 <div
-                    class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    class="circle three h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                     3
                     <div class="absolute w-24 h-1 bg-[var(--main)] -left-full"></div>
                     <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
@@ -57,13 +62,13 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             class="circle h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
             0
             <p class="absolute -left-5 -bottom-6 text-yellow-500 text-lg">4</p>
             <div class="absolute w-28 h-1 bg-[var(--main)] -left-full top-0 rotate-[35deg]"></div>
             <div class="absolute w-28 h-1 bg-[var(--main)] -left-full bottom-0 rotate-[-35deg]"></div>
-        </div>
+        </div> -->
 
 
 
