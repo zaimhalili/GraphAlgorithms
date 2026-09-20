@@ -1,24 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Kavoon&display=swap');
 
-*{
+:root {
+    --dark: #000120;
+    --mid: #00293f;
+    --main: rgb(215, 140, 0);
+    --light: #d1f8ff;
+}
+
+* {
     margin: 0;
     box-sizing: border-box;
     font-family: "Kavoon", sans-serif;
     border: none;
 }
 
-button{
+button {
     cursor: pointer;
 }
 
-:root{
-    --dark:#000120;
-    --mid:#00293f;
-    --main: orange;
-    --light: #caf0f8;
-}
 
-body{
+body {
     background-color: var(--light);
     display: flex;
     align-items: center;
@@ -28,12 +29,12 @@ body{
     flex-direction: column;
 }
 
-.choices{
+.choices {
     display: flex;
     gap: 3rem;
 }
 
-.choices button{
+.choices button {
     font-size: 2rem;
     background-color: var(--mid);
     color: var(--light);
@@ -43,22 +44,22 @@ body{
     box-shadow: 0px 7px 0px white;
 }
 
-.choices button:hover{
+.choices button:hover {
     background-color: var(--main);
     color: var(--dark);
     /* scale: 1.05; */
 }
 
-.choices button:active{
+.choices button:active {
     translate: 0px 7px;
     box-shadow: none;
 }
 
-.choices button.selectedButton{
+.choices button.selectedButton {
     background-color: var(--main);
 }
 
-.map{
+.map {
     background-color: var(--mid);
     height: 500px;
     width: 700px;
@@ -66,11 +67,11 @@ body{
     border-radius: 6px;
 }
 
-.visited{
+.visited {
     background-color: #03045e !important;
     color: white;
 }
 
-.circle{
+.circle {
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
 }
