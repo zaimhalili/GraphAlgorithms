@@ -20,11 +20,11 @@
         <button onclick="clearMap()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold">Clear
             Grid</button>
 
-        <label for="speed" class="ml-4 font-mono">Speed Delay (ms):</label>
+        <label for="speed" class="ml-4 ">Speed Delay (ms):</label>
         <input type="range" id="speed" min="0" max="50" value="2" class="cursor-pointer">
     </div>
 
-    <div id="stats" class="text-lg font-mono mb-4 text-yellow-400">
+    <div id="stats" class="text-lg  mb-4 text-[var(--main)]">
         Click & drag on the map to draw walls!
     </div>
 
@@ -74,7 +74,7 @@
         </div>
     </main>
 
-    <script src="./map.js"></script>
+    <script src="./src/Renderers/map.js"></script>
     <script src="./main.js"></script>
 </body>
 
