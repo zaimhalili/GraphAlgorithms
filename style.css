@@ -3,7 +3,7 @@
 :root {
     --dark: #000120;
     --mid: #00293f;
-    --main: rgb(215, 140, 0);
+    --main: #d78c00;
     --light: #d1f8ff;
 }
 
@@ -12,6 +12,11 @@
     box-sizing: border-box;
     font-family: "Kavoon", sans-serif;
     border: none;
+}
+
+*::selection{
+    background: #000;
+    color: whitesmoke;
 }
 
 button {
@@ -68,7 +73,7 @@ body {
 }
 
 .visited {
-    background-color: #03045e !important;
+    background-color: var(--dark) !important;
     color: white;
 }
 

@@ -5,165 +5,77 @@
     <meta charset="UTF-8">
     <title>Pathfinding Map Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
-<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center p-6">
+<body class="bg-[#000120] text-white min-h-screen flex flex-col items-center p-6">
 
     <h1 class="text-3xl font-bold mb-4">Interactive Grid Map Visualizer</h1>
 
-    <div class="flex gap-4 mb-4">
+    <div class="flex gap-4 mb-4 items-center">
         <button onclick="runSearch('dijkstra')"
-            class="px-5 py-2 bg-blue-600 hover:bg-blue-500 rounded font-semibold">Run Dijkstra</button>
-        <button onclick="runSearch('astar')"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 rounded font-semibold">Run A*</button>
+            class="px-5 py-2 bg-[#00293f] hover:bg-[#004063] rounded font-semibold">Run Dijkstra</button>
+        <button onclick="runSearch('astar')" class="px-5 py-2 bg-[#00293f] hover:bg-[#004063] rounded font-semibold">Run
+            A*</button>
         <button onclick="clearMap()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold">Clear
             Grid</button>
+
+        <label for="speed" class="ml-4 font-mono">Speed Delay (ms):</label>
+        <input type="range" id="speed" min="0" max="50" value="2" class="cursor-pointer">
     </div>
 
     <div id="stats" class="text-lg font-mono mb-4 text-yellow-400">
         Click & drag on the map to draw walls!
     </div>
 
-    <canvas id="gridCanvas" class="border-2 border-slate-700 rounded-lg shadow-2xl cursor-pointer"></canvas>
+    <canvas id="gridCanvas" class="border-2 border-slate-700 rounded-lg shadow-2xl cursor-pointer mb-8"></canvas>
 
-    <script>
-        const COLS = 25;
-        const ROWS = 18;
-        const CELL_SIZE = 28;
+    <!-- Node Graph HTML Appended Below -->
+    <p id="percorso" class="text-[var(--main)] text-3xl font-light">Percorso più corto: </p>
+    <main class="map flex items-center justify-center gap-10 border border-slate-800 p-6 rounded-lg">
+        <div
+            class="circle zero h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
+            0
+        </div>
 
-        const canvas = document.getElementById("gridCanvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = COLS * CELL_SIZE;
-        canvas.height = ROWS * CELL_SIZE;
+        <div class="column flex gap-20 flex-col">
+            <div class="pair flex gap-20">
+                <div
+                    class="circle one h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    1
+                    <div class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg]"></div>
+                    <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                    <p class="absolute -left-8 bottom-1 text-yellow-500 text-lg">4</p>
+                    <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
+                </div>
+                <div
+                    class="circle four h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    4
+                    <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
+                    <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                    <p class="absolute -left-12 top-1 text-yellow-500 text-lg">6</p>
+                </div>
+            </div>
+            <div class="pair flex gap-20">
+                <div
+                    class="circle two h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    2
+                    <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full top-0 rotate-[35deg]"></div>
+                    <p class="absolute -left-8 top-1 text-yellow-500 text-lg">8</p>
+                </div>
+                <div
+                    class="circle three h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                    3
+                    <div class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
+                    <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
+                    <p class="absolute -top-14 right-1 text-yellow-500 text-lg">10</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
-        // 0: Empty, 1: Wall, 'S': Start, 'G': Goal
-        let grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        let start = { r: 3, c: 3 };
-        let goal = { r: ROWS - 4, c: COLS - 4 };
-
-        let isMouseDown = false;
-
-        // Event Listeners for drawing walls
-        canvas.addEventListener("mousedown", (e) => { isMouseDown = true; toggleWall(e); });
-        canvas.addEventListener("mouseup", () => isMouseDown = false);
-        canvas.addEventListener("mousemove", (e) => { if (isMouseDown) toggleWall(e); });
-
-        function toggleWall(e) {
-            const rect = canvas.getBoundingClientRect();
-            const c = Math.floor((e.clientX - rect.left) / CELL_SIZE);
-            const r = Math.floor((e.clientY - rect.top) / CELL_SIZE);
-
-            if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
-                if ((r !== start.r || c !== start.c) && (r !== goal.r || c !== goal.c)) {
-                    grid[r][c] = 1;
-                    drawGrid();
-                }
-            }
-        }
-
-        function clearMap() {
-            grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-            document.getElementById("stats").innerText = "Click & drag on the map to draw walls!";
-            drawGrid();
-        }
-
-        function drawGrid(visited = [], path = []) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    let x = c * CELL_SIZE;
-                    let y = r * CELL_SIZE;
-
-                    if (r === start.r && c === start.c) {
-                        ctx.fillStyle = "#22c55e"; // Green start
-                    } else if (r === goal.r && c === goal.c) {
-                        ctx.fillStyle = "#ef4444"; // Red goal
-                    } else if (path.some(p => p.r === r && p.c === c)) {
-                        ctx.fillStyle = "#f59e0b"; // Yellow path
-                    } else if (visited.some(v => v.r === r && v.c === c)) {
-                        ctx.fillStyle = "#3b82f6"; // Blue visited search expansion
-                    } else if (grid[r][c] === 1) {
-                        ctx.fillStyle = "#334155"; // Dark wall
-                    } else {
-                        ctx.fillStyle = "#1e293b"; // Dark grid background
-                    }
-
-                    ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                }
-            }
-        }
-
-        function getNeighbors(r, c) {
-            const res = [];
-            const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]; // 4-directional movement
-            for (let [dr, dc] of dirs) {
-                let nr = r + dr, nc = c + dc;
-                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] !== 1) {
-                    res.push({ r: nr, c: nc });
-                }
-            }
-            return res;
-        }
-
-        function runSearch(algo) {
-            let openSet = [{ ...start, g: 0, f: 0 }];
-            let cameFrom = {};
-            let gScore = Array.from({ length: ROWS }, () => Array(COLS).fill(Infinity));
-            gScore[start.r][start.c] = 0;
-
-            let visitedList = [];
-            let startTime = performance.now();
-
-            while (openSet.length > 0) {
-                // Sort to simulate Priority Queue
-                openSet.sort((a, b) => a.f - b.f);
-                let curr = openSet.shift();
-
-                visitedList.push(curr);
-
-                if (curr.r === goal.r && curr.c === goal.c) {
-                    let endTime = performance.now();
-                    let path = [];
-                    let temp = `${goal.r},${goal.c}`;
-                    while (cameFrom[temp]) {
-                        let [r, c] = temp.split(",").map(Number);
-                        path.push({ r, c });
-                        temp = cameFrom[temp];
-                    }
-
-                    drawGrid(visitedList, path);
-                    document.getElementById("stats").innerText =
-                        `${algo.toUpperCase()} | Visited: ${visitedList.length} cells | Time: ${(endTime - startTime).toFixed(3)} ms`;
-                    return;
-                }
-
-                for (let neighbor of getNeighbors(curr.r, curr.c)) {
-                    let tempG = gScore[curr.r][curr.c] + 1;
-
-                    if (tempG < gScore[neighbor.r][neighbor.c]) {
-                        cameFrom[`${neighbor.r},${neighbor.c}`] = `${curr.r},${curr.c}`;
-                        gScore[neighbor.r][neighbor.c] = tempG;
-
-                        // Manhattan Heuristic for A*, 0 for Dijkstra
-                        let h = (algo === 'astar')
-                            ? Math.abs(neighbor.r - goal.r) + Math.abs(neighbor.c - goal.goal)
-                            : 0;
-
-                        let f = tempG + h;
-
-                        if (!openSet.some(n => n.r === neighbor.r && n.c === neighbor.c)) {
-                            openSet.push({ ...neighbor, g: tempG, f: f });
-                        }
-                    }
-                }
-            }
-
-            document.getElementById("stats").innerText = "No path found!";
-        }
-
-        drawGrid();
-    </script>
+    <script src="./map.js"></script>
+    <script src="./main.js"></script>
 </body>
 
 </html>
