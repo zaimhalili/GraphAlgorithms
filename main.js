@@ -26,54 +26,6 @@ const nodeCoords = {
     4: { x: 420, y: 80  }
 };
 
-class MinHeap {
-    constructor() {
-        this.heap = [];
-    }
-
-    push(item) {
-        this.heap.push(item);
-        this._bubbleUp();
-    }
-
-    pop() {
-        if (this.heap.length === 1) return this.heap.pop();
-        const top = this.heap[0];
-        this.heap[0] = this.heap.pop();
-        this._bubbleDown();
-        return top;
-    }
-
-    _bubbleUp() {
-        let i = this.heap.length - 1;
-        while (i > 0) {
-            let p = Math.floor((i - 1) / 2);
-            if (this.heap[p][0] <= this.heap[i][0]) break;
-            [this.heap[p], this.heap[i]] = [this.heap[i], this.heap[p]];
-            i = p;
-        }
-    }
-
-    _bubbleDown() {
-        let i = 0;
-        const n = this.heap.length;
-        while (true) {
-            let l = 2 * i + 1, r = 2 * i + 2, smallest = i;
-
-            if (l < n && this.heap[l][0] < this.heap[smallest][0]) smallest = l;
-            if (r < n && this.heap[r][0] < this.heap[smallest][0]) smallest = r;
-
-            if (smallest === i) break;
-            [this.heap[i], this.heap[smallest]] = [this.heap[smallest], this.heap[i]];
-            i = smallest;
-        }
-    }
-
-    isEmpty() {
-        return this.heap.length === 0;
-    }
-}
-
 function colorNode(nodeNumber) {
     // 1. Remove previous highlighted nodes
     document.querySelectorAll(".visited").forEach(el => el.classList.remove("visited"));
@@ -88,63 +40,12 @@ function colorNode(nodeNumber) {
     }
 }
 
-function dijkstra(adj, src) {
-    let V = adj.length;
-    let pq = new MinHeap();
-    let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
-
-    dist[src] = 0;
-    pq.push([0, src]);
-
-    while (!pq.isEmpty()) {
-        let [d, u] = pq.pop();
-
-        if (d > dist[u]) continue;
-
-        for (let [v, w] of adj[u]) {
-            if (dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                pq.push([dist[v], v]);
-            }
-        }
-    }
-
-    return dist;
-}
-
 // Admissible Euclidean heuristic divided by a scaling factor
 function heuristic(node, target) {
     if (!nodeCoords[node] || !nodeCoords[target]) return 0;
     let dx = nodeCoords[node].x - nodeCoords[target].x;
     let dy = nodeCoords[node].y - nodeCoords[target].y;
     return Math.hypot(dx, dy) / 50;
-}
-
-function astar(adj, src, target) {
-    let V = adj.length;
-    let pq = new MinHeap();
-    let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
-    dist[src] = 0;
-
-    pq.push([dist[src] + heuristic(src, target), src]);
-
-    while (!pq.isEmpty()) {
-        let [f, u] = pq.pop();
-
-        if (u === target) {
-            return dist[target];
-        }
-
-        for (let [v, w] of adj[u]) {
-            if (dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                let fScore = dist[v] + heuristic(v, target);
-                pq.push([fScore, v]);
-            }
-        }
-    }
-
-    return dist[target];
 }
 
 function selectAlgorithm(name) {
