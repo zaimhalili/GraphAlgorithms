@@ -14,6 +14,8 @@ export class MapRenderer {
         this.goal = { r: this.ROWS - 5, c: this.COLS - 5 };
 
         this.isMouseDown = false;
+        this.drawMode = 1; // 1 = draw wall, 0 = erase wall
+
         this.initEvents();
         this.drawGrid();
     }
@@ -21,8 +23,19 @@ export class MapRenderer {
     initEvents() {
         this.canvas.addEventListener("mousedown", (e) => {
             this.isMouseDown = true;
+
+            // Determine whether we are drawing or erasing based on the initial cell clicked
+            const rect = this.canvas.getBoundingClientRect();
+            const c = Math.floor((e.clientX - rect.left) / this.CELL_SIZE);
+            const r = Math.floor((e.clientY - rect.top) / this.CELL_SIZE);
+
+            if (r >= 0 && r < this.ROWS && c >= 0 && c < this.COLS) {
+                this.drawMode = this.grid[r][c] === 1 ? 0 : 1;
+            }
+
             this.toggleWall(e);
         });
+
         this.canvas.addEventListener("mouseup", () => (this.isMouseDown = false));
         this.canvas.addEventListener("mouseleave", () => (this.isMouseDown = false));
         this.canvas.addEventListener("mousemove", (e) => {
@@ -36,8 +49,11 @@ export class MapRenderer {
         const r = Math.floor((e.clientY - rect.top) / this.CELL_SIZE);
 
         if (r >= 0 && r < this.ROWS && c >= 0 && c < this.COLS) {
-            if ((r !== this.start.r || c !== this.start.c) && (r !== this.goal.r || c !== this.goal.c)) {
-                this.grid[r][c] = 1;
+            const isStart = r === this.start.r && c === this.start.c;
+            const isGoal = r === this.goal.r && c === this.goal.c;
+
+            if (!isStart && !isGoal && this.grid[r][c] !== this.drawMode) {
+                this.grid[r][c] = this.drawMode;
                 this.drawGrid();
             }
         }
@@ -51,8 +67,9 @@ export class MapRenderer {
     drawGrid(visited = [], path = []) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        const visitedSet = new Set(visited.map(v => `${v.r},${v.c}`));
-        const pathSet = new Set(path.map(p => `${p.r},${p.c}`));
+        // Fast lookup sets for animation step rendering
+        const visitedSet = visited instanceof Set ? visited : new Set(visited.map(v => `${v.r},${v.c}`));
+        const pathSet = path instanceof Set ? path : new Set(path.map(p => `${p.r},${p.c}`));
 
         for (let r = 0; r < this.ROWS; r++) {
             for (let c = 0; c < this.COLS; c++) {
