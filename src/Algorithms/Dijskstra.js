@@ -1,6 +1,6 @@
 import { MinHeap } from '../Models/MinHeap.js';
 
-export function dijkstra(adj, src) {
+export function dijsktra(adj, src) {
     let V = adj.length;
     let pq = new MinHeap();
     let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);

@@ -1,4 +1,4 @@
-export class Graph{
+export class Graph {
     constructor(numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
         this.adjList = [];
@@ -12,7 +12,7 @@ graph.adjList = [
     [[0, 8], [3, 2], [1, 3]],  // Node 2
     [[2, 2], [4, 10]],         // Node 3
     [[1, 6], [3, 10]]          // Node 4
-]
+];
 
 export const matrix = graph.adjList;
 

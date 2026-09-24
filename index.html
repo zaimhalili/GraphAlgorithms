@@ -3,79 +3,162 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pathfinding Map Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./style.css">
+    <style>
+        /* CSS Variables matching your layout */
+        :root {
+            --light: #ffffff;
+            --dark: #000120;
+            --main: #3b82f6;
+        }
+
+        /* Active button styling */
+        .selectedButton {
+            background-color: var(--light) !important;
+            color: var(--dark) !important;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
-<body class="bg-[#000120] text-white min-h-screen flex flex-col items-center p-6">
+<body class="bg-[#000120] text-white min-h-screen flex flex-col items-center p-6 gap-8">
 
-    <h1 class="text-3xl font-bold mb-4">Interactive Grid Map Visualizer</h1>
-
-    <div class="flex gap-4 mb-4 items-center">
-        <button onclick="runSearch('dijkstra')"
-            class="px-5 py-2 bg-[#00293f] hover:bg-[#004063] rounded font-semibold">Run Dijkstra</button>
-        <button onclick="runSearch('astar')" class="px-5 py-2 bg-[#00293f] hover:bg-[#004063] rounded font-semibold">Run
-            A*</button>
-        <button onclick="clearMap()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold">Clear
-            Grid</button>
-
-        <label for="speed" class="ml-4 ">Speed Delay (ms):</label>
-        <input type="range" id="speed" min="0" max="50" value="2" class="cursor-pointer">
-    </div>
-
-    <div id="stats" class="text-lg  mb-4 text-[var(--main)]">
-        Click & drag on the map to draw walls!
-    </div>
-
-    <canvas id="gridCanvas" class="border-2 border-slate-700 rounded-lg shadow-2xl cursor-pointer mb-8"></canvas>
-
-    <!-- Node Graph HTML Appended Below -->
-    <p id="percorso" class="text-[var(--main)] text-3xl font-light">Percorso più corto: </p>
-    <main class="map flex items-center justify-center gap-10 border border-slate-800 p-6 rounded-lg">
-        <div
-            class="circle zero h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
-            0
-        </div>
-
-        <div class="column flex gap-20 flex-col">
-            <div class="pair flex gap-20">
-                <div
-                    class="circle one h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
-                    1
-                    <div class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg]"></div>
-                    <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
-                    <p class="absolute -left-8 bottom-1 text-yellow-500 text-lg">4</p>
-                    <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
-                </div>
-                <div
-                    class="circle four h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
-                    4
-                    <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
-                    <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
-                    <p class="absolute -left-12 top-1 text-yellow-500 text-lg">6</p>
-                </div>
-            </div>
-            <div class="pair flex gap-20">
-                <div
-                    class="circle two h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
-                    2
-                    <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full top-0 rotate-[35deg]"></div>
-                    <p class="absolute -left-8 top-1 text-yellow-500 text-lg">8</p>
-                </div>
-                <div
-                    class="circle three h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
-                    3
-                    <div class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
-                    <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
-                    <p class="absolute -top-14 right-1 text-yellow-500 text-lg">10</p>
-                </div>
+    <!-- map -->
+    <section class="w-full max-w-[1500px] flex flex-col gap-4">
+        <div class="flex justify-between w-full items-center">
+            <h2 class="text-2xl font-semibold">Pathfinding on a Canvas Grid</h2>
+            <div class="flex">
+                <button type="button" id="dijkstraGrid" onclick="selectAlgorithm('Dijkstra', 'grid')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tl-2xl rounded-bl-2xl text-lg">
+                    Dijkstra
+                </button>
+                <button type="button" id="astarGrid" onclick="selectAlgorithm('Astar', 'grid')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                    A*
+                </button>
             </div>
         </div>
-    </main>
 
-    <script src="./src/Renderers/map.js"></script>
-    <script src="./main.js"></script>
+        <div class="flex justify-between items-center w-full">
+            <div class="flex gap-2">
+                <button type="button" onclick="setGridMode('wall')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Wall
+                </button>
+                <button type="button" onclick="setGridMode('start')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Start
+                </button>
+                <button type="button" onclick="setGridMode('end')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    End
+                </button>
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="startGridRoute()"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Start Route
+                </button>
+                <button type="button" onclick="clearMap()"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Clear
+                </button>
+                <button type="button" onclick="resetGrid()"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="map flex justify-center items-center my-4">
+            <canvas id="gridCanvas" class="border border-slate-700 rounded-lg shadow-2xl cursor-pointer"></canvas>
+            <p id="gridStatus" class="sr-only" aria-live="polite">Ready</p>
+            </p>
+        </div>
+        <p id="gridComparison" class="text-sm text-[var(--light)]/70" aria-live="polite">Dijkstra: -- ms | A*: -- ms
+        </p>
+    </section>
+
+    <!-- Section 2: Node Graph Visualizer -->
+    <section class="w-full max-w-[1500px] flex flex-col gap-4">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="text-2xl font-semibold">Pathfinding on a Node Graph</h2>
+            <div class="flex items-center gap-4">
+                <!-- Search Input for Node Selection -->
+                <div class="flex items-center gap-2">
+                    <label for="numSearch" class="text-sm text-[var(--light)]/70">Target Node:</label>
+                    <input type="number" id="numSearch" min="0" max="4" value="3"
+                        class="w-16 px-2 py-1 bg-slate-800 border border-slate-600 rounded text-center text-white focus:outline-none focus:border-blue-500" />
+                </div>
+                <div class="flex">
+                    <button type="button" id="dijsktra" onclick="selectAlgorithm('Dijkstra', 'node')"
+                        class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tl-2xl rounded-bl-2xl text-lg">
+                        Dijkstra
+                    </button>
+                    <button type="button" id="astar" onclick="selectAlgorithm('Astar', 'node')"
+                        class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                        A*
+                    </button>
+                </div>
+                <button type="button" onclick="startGraphRoute()"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                    Start Route
+                </button>
+            </div>
+        </div>
+
+        <main class="map flex items-center justify-center gap-10 border border-slate-800 p-8 rounded-lg w-full">
+            <div
+                class="circle zero h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
+                0
+            </div>
+
+            <div class="column flex gap-20 flex-col">
+                <div class="pair flex gap-20">
+                    <div
+                        class="circle one h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        1
+                        <div class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg]">
+                        </div>
+                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                        <p class="absolute -left-8 bottom-1 text-yellow-500 text-lg">4</p>
+                        <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
+                    </div>
+                    <div
+                        class="circle four h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        4
+                        <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
+                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                        <p class="absolute -left-12 top-1 text-yellow-500 text-lg">6</p>
+                    </div>
+                </div>
+                <div class="pair flex gap-20">
+                    <div
+                        class="circle two h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        2
+                        <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full top-0 rotate-[35deg]"></div>
+                        <p class="absolute -left-8 top-1 text-yellow-500 text-lg">8</p>
+                    </div>
+                    <div
+                        class="circle three h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        3
+                        <div class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
+                        <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
+                        <p class="absolute -top-14 right-1 text-yellow-500 text-lg">10</p>
+                    </div>
+                </div>
+            </div>
+            <p id="percorso" class="text-lg text-yellow-500" aria-live="polite">Percorso più corto: N/A</p>
+        </main>
+        <p id="graphComparison" class="text-sm text-[var(--light)]/70" aria-live="polite">Dijkstra: -- ms | A*: -- ms
+        </p>
+    </section>
+
+    <!-- Scripts using ES Modules -->
+    <script type="module" src="./main.js"></script>
 </body>
 
 </html>

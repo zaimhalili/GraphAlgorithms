@@ -25,7 +25,7 @@ export class MinHeap {
     _bubbleUp() {
         let i = this.heap.length - 1;
         while (i > 0) {
-            let p = (i - 1) >> 1; // bitwise floor
+            let p = (i - 1) >> 1;
             if (this._val(this.heap[p]) <= this._val(this.heap[i])) break;
             [this.heap[p], this.heap[i]] = [this.heap[i], this.heap[p]];
             i = p;
