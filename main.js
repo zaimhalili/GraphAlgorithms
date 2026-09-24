@@ -5,6 +5,7 @@ import { matrix, heuristic } from './src/Data/Graph.js';
 
 let selectedGridAlgorithm = "Dijkstra";
 let selectedGraphAlgorithm = "Dijkstra";
+let graphAnimationId = 0;
 
 export function selectAlgorithm(name, graph = "node") {
     const isGrid = graph === "grid";
@@ -21,43 +22,64 @@ export function selectAlgorithm(name, graph = "node") {
 export function startGridRoute() {
     if (!mapRenderer) return;
 
-    const results = mapRenderer.compareAlgorithms();
-    const selected = results[selectedGridAlgorithm];
-    mapRenderer.drawGrid(selected.visited, selected.path);
+    const startTime = performance.now();
+    const selected = mapRenderer.findRoute(selectedGridAlgorithm);
+    const elapsed = performance.now() - startTime;
+    const speedInput = document.getElementById("gridSpeed");
+    const speed = speedInput ? speedInput.value : 0;
+    mapRenderer.animateRoute(selected, speed);
 
     const comparison = document.getElementById("gridComparison");
     if (comparison) {
         const selectedLabel = selectedGridAlgorithm === "Astar" ? "A*" : selectedGridAlgorithm;
-        comparison.textContent = `Dijkstra: ${results.Dijkstra.time.toFixed(3)} ms | A*: ${results.Astar.time.toFixed(3)} ms | Showing ${selectedLabel}`;
+        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(3)} ms`;
     }
     const status = document.getElementById("gridStatus");
     if (status) status.textContent = selected.found ? "Path found" : "No path found";
 }
 
 export function startGraphRoute() {
-    const inputNumber = Math.min(4, Math.max(0, Number(document.getElementById("numSearch")?.value) || 0));
-    const iterations = 1000;
-    let dijkstraResult;
-    let astarResult;
-    const dijkstraStart = performance.now();
-    for (let i = 0; i < iterations; i++) dijkstraResult = dijsktra(matrix, 0);
-    const dijkstraTime = (performance.now() - dijkstraStart) / iterations;
-
-    const astarStart = performance.now();
-    for (let i = 0; i < iterations; i++) astarResult = astar(matrix, 0, inputNumber, heuristic);
-    const astarTime = (performance.now() - astarStart) / iterations;
+    const input = document.getElementById("numSearch");
+    const inputNumber = Math.min(4, Math.max(0, Number(input ? input.value : 0) || 0));
+    const startTime = performance.now();
+    const result = selectedGraphAlgorithm === "Dijkstra"
+        ? dijsktra(matrix, 0)[inputNumber]
+        : astar(matrix, 0, inputNumber, heuristic);
+    const elapsed = performance.now() - startTime;
 
     const percorsoEl = document.getElementById("percorso");
     if (percorsoEl) {
-        const result = selectedGraphAlgorithm === "Dijkstra" ? dijkstraResult[inputNumber] : astarResult;
-        percorsoEl.textContent = `Percorso più corto: ${result ?? "N/A"}`;
+        percorsoEl.textContent = `Percorso più corto: ${result !== undefined ? result : "N/A"}`;
     }
     const comparison = document.getElementById("graphComparison");
     if (comparison) {
         const selectedLabel = selectedGraphAlgorithm === "Astar" ? "A*" : selectedGraphAlgorithm;
-        comparison.textContent = `Dijkstra: ${dijkstraTime.toFixed(5)} ms | A*: ${astarTime.toFixed(5)} ms | Showing ${selectedLabel}`;
+        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(5)} ms`;
     }
-    colorNode(inputNumber);
+    const speedInput = document.getElementById("graphSpeed");
+    const speed = Number(speedInput ? speedInput.value : 0) || 0;
+    animateGraphRoute(inputNumber, speed);
+}
+
+async function animateGraphRoute(targetNode, delay) {
+    const animationId = ++graphAnimationId;
+    const pause = Math.max(0, Number(delay) || 0);
+    const route = Array.from({ length: targetNode + 1 }, (_, node) => node);
+
+    for (const node of route) {
+        if (animationId !== graphAnimationId) return;
+        colorNode(node);
+        if (pause) await new Promise(resolve => setTimeout(resolve, pause));
+    }
+}
+
+function bindSpeedControl(inputId, outputId) {
+    const input = document.getElementById(inputId);
+    const output = document.getElementById(outputId);
+    if (!input || !output) return;
+    input.addEventListener("input", () => {
+        output.textContent = `${input.value} ms`;
+    });
 }
 
 export function setGridMode(mode) {
@@ -69,7 +91,7 @@ export function visualizeGrid() {
 }
 
 export function resetGrid() {
-    mapRenderer?.reset();
+    if (mapRenderer) mapRenderer.reset();
     const status = document.getElementById("gridStatus");
     if (status) status.textContent = "Ready";
 }
@@ -90,3 +112,10 @@ window.clearMap = clearMap;
 window.setGridMode = setGridMode;
 window.visualizeGrid = visualizeGrid;
 window.resetGrid = resetGrid;
+
+window.addEventListener("DOMContentLoaded", () => {
+    selectAlgorithm("Dijkstra", "grid");
+    selectAlgorithm("Dijkstra", "node");
+    bindSpeedControl("gridSpeed", "gridSpeedValue");
+    bindSpeedControl("graphSpeed", "graphSpeedValue");
+});

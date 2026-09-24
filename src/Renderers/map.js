@@ -1,3 +1,5 @@
+import { MinHeap } from "../Models/MinHeap.js";
+
 export class MapRenderer {
     constructor(canvasId = "gridCanvas", rows = 40, cols = 80, cellSize = 12) {
         this.canvas = document.getElementById(canvasId);
@@ -19,6 +21,7 @@ export class MapRenderer {
         this.drawMode = 1;
         this.interactionMode = "wall";
         this.isVisualized = false;
+        this.animationId = 0;
 
         this.initEvents();
         this.drawGrid();
@@ -71,6 +74,7 @@ export class MapRenderer {
     }
 
     reset() {
+        this.animationId++;
         this.grid = Array.from({ length: this.ROWS }, () => Array(this.COLS).fill(0));
         this.start = { r: 3, c: 3 };
         this.goal = { r: this.ROWS - 5, c: this.COLS - 5 };
@@ -80,35 +84,41 @@ export class MapRenderer {
 
     findRoute(algorithm = "Dijkstra") {
         const visited = new Set();
+        const visitedOrder = [];
         const path = new Set();
-        const frontier = [{ priority: 0, point: this.start }];
+        const frontier = new MinHeap();
         const previous = new Map();
         const distance = new Map();
         const startKey = `${this.start.r},${this.start.c}`;
         const goalKey = `${this.goal.r},${this.goal.c}`;
         visited.add(startKey);
         distance.set(startKey, 0);
+        frontier.push([0, this.start]);
 
-        while (frontier.length) {
-            frontier.sort((a, b) => a.priority - b.priority);
-            const current = frontier.shift().point;
+        while (!frontier.isEmpty()) {
+            const [, current] = frontier.pop();
             const currentKey = `${current.r},${current.c}`;
             if (currentKey === goalKey) break;
+            visitedOrder.push(currentKey);
 
             for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
                 const next = { r: current.r + dr, c: current.c + dc };
                 const key = `${next.r},${next.c}`;
                 if (next.r < 0 || next.r >= this.ROWS || next.c < 0 || next.c >= this.COLS ||
                     this.grid[next.r][next.c] === 1) continue;
+
                 const nextDistance = distance.get(currentKey) + 1;
-                if (nextDistance >= (distance.get(key) ?? Infinity)) continue;
+                const knownDistance = distance.has(key) ? distance.get(key) : Infinity;
+                if (nextDistance >= knownDistance) continue;
+
                 visited.add(key);
                 previous.set(key, currentKey);
                 distance.set(key, nextDistance);
-                const heuristic = algorithm === "Astar"
-                    ? Math.abs(next.r - this.goal.r) + Math.abs(next.c - this.goal.c)
-                    : 0;
-                frontier.push({ priority: nextDistance + heuristic, point: next });
+                let heuristic = 0;
+                if (algorithm === "Astar") {
+                    heuristic = Math.abs(next.r - this.goal.r) + Math.abs(next.c - this.goal.c);
+                }
+                frontier.push([nextDistance + heuristic, next]);
             }
         }
 
@@ -117,22 +127,35 @@ export class MapRenderer {
             path.add(key);
             key = previous.get(key);
         }
+        const pathOrder = [...path].reverse();
         return {
             visited,
+            visitedOrder,
             path,
+            pathOrder,
             found: path.size > 0 || startKey === goalKey,
-            distance: distance.get(goalKey) ?? Infinity
+            distance: distance.has(goalKey) ? distance.get(goalKey) : Infinity
         };
     }
 
-    compareAlgorithms() {
-        const results = {};
-        for (const algorithm of ["Dijkstra", "Astar"]) {
-            const startTime = performance.now();
-            results[algorithm] = this.findRoute(algorithm);
-            results[algorithm].time = performance.now() - startTime;
+    async animateRoute(result, delay = 0) {
+        const animationId = ++this.animationId;
+        const visited = new Set();
+        const path = new Set();
+        const pause = Math.max(0, Number(delay) || 0);
+        for (const key of result.visitedOrder) {
+            if (animationId !== this.animationId) return;
+            visited.add(key);
+            this.drawGrid(visited, path);
+            if (pause) await new Promise(resolve => setTimeout(resolve, pause));
         }
-        return results;
+        for (const key of result.pathOrder) {
+            if (animationId !== this.animationId) return;
+            path.add(key);
+            this.drawGrid(visited, path);
+            if (pause) await new Promise(resolve => setTimeout(resolve, pause));
+        }
+        this.isVisualized = true;
     }
 
     visualize(algorithm = "Dijkstra") {

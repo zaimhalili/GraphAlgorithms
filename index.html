@@ -73,16 +73,20 @@
             </div>
         </div>
 
+        <label for="gridSpeed" class="flex items-center gap-3 text-sm text-[var(--light)]/70">
+            Animation speed
+            <input id="gridSpeed" type="range" min="0" max="80" step="5" value="10" class="w-48">
+            <output id="gridSpeedValue">10 ms</output>
+        </label>
+
         <div class="map flex justify-center items-center my-4">
             <canvas id="gridCanvas" class="border border-slate-700 rounded-lg shadow-2xl cursor-pointer"></canvas>
             <p id="gridStatus" class="sr-only" aria-live="polite">Ready</p>
-            </p>
         </div>
-        <p id="gridComparison" class="text-sm text-[var(--light)]/70" aria-live="polite">Dijkstra: -- ms | A*: -- ms
-        </p>
+        <p id="gridComparison" class="text-lg text-[#d78c00]" aria-live="polite">Select an algorithm and start the route.</p>
     </section>
 
-    <!-- Section 2: Node Graph Visualizer -->
+    <!-- Small Graph -->
     <section class="w-full max-w-[1500px] flex flex-col gap-4">
         <div class="flex justify-between items-center w-full">
             <h2 class="text-2xl font-semibold">Pathfinding on a Node Graph</h2>
@@ -109,6 +113,12 @@
                 </button>
             </div>
         </div>
+
+        <label for="graphSpeed" class="flex items-center gap-3 text-sm text-[var(--light)]/70">
+            Animation speed
+            <input id="graphSpeed" type="range" min="0" max="80" step="5" value="10" class="w-48">
+            <output id="graphSpeedValue">10 ms</output>
+        </label>
 
         <main class="map flex items-center justify-center gap-10 border border-slate-800 p-8 rounded-lg w-full">
             <div
@@ -153,8 +163,7 @@
             </div>
             <p id="percorso" class="text-lg text-yellow-500" aria-live="polite">Percorso più corto: N/A</p>
         </main>
-        <p id="graphComparison" class="text-sm text-[var(--light)]/70" aria-live="polite">Dijkstra: -- ms | A*: -- ms
-        </p>
+        <p id="graphComparison" class="text-lg text-[#d78c00]" aria-live="polite">Select an algorithm and start the route.</p>
     </section>
 
     <!-- Scripts using ES Modules -->
