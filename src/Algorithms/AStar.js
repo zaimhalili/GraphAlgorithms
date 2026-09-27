@@ -1,6 +1,6 @@
 import { MinHeap } from '../Models/MinHeap.js';
 
-export function astar(adj, src, target, heuristicFn) {
+export function astar(adj, src, target, heuristicFn, previous = new Map()) {
     let V = adj.length;
     let pq = new MinHeap();
     let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
@@ -18,6 +18,7 @@ export function astar(adj, src, target, heuristicFn) {
         for (let [v, w] of adj[u]) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
+                previous.set(v, u);
                 let fScore = dist[v] + heuristicFn(v, target);
                 pq.push([fScore, v]);
             }

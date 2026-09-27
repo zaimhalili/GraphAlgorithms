@@ -1,6 +1,6 @@
 import { MinHeap } from '../Models/MinHeap.js';
 
-export function dijsktra(adj, src) {
+export function dijsktra(adj, src, previous = new Map()) {
     let V = adj.length;
     let pq = new MinHeap();
     let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
@@ -16,6 +16,7 @@ export function dijsktra(adj, src) {
         for (let [v, w] of adj[u]) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
+                previous.set(v, u);
                 pq.push([dist[v], v]);
             }
         }

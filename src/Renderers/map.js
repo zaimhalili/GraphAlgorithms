@@ -1,5 +1,7 @@
 import { MinHeap } from "../Models/MinHeap.js";
 import { bidirectionalAstar } from "../Algorithms/BidirectionalAStar.js";
+import { SearchAudio } from "../Audio/SearchAudio.js";
+import { scheduleFrame } from "../Utils/scheduleFrame.js";
 
 export class MapRenderer {
     constructor(canvasId = "gridCanvas", rows = 40, cols = 100, cellSize = 12) {
@@ -23,6 +25,15 @@ export class MapRenderer {
         this.interactionMode = "wall";
         this.isVisualized = false;
         this.animationId = 0;
+        this.searchAudio = new SearchAudio();
+
+        const soundToggle = document.getElementById("gridSound");
+        if (soundToggle) {
+            this.searchAudio.setEnabled(soundToggle.checked);
+            soundToggle.addEventListener("change", () => {
+                this.searchAudio.setEnabled(soundToggle.checked);
+            });
+        }
 
         this.initEvents();
         this.drawGrid();
@@ -148,18 +159,50 @@ export class MapRenderer {
         const visited = new Set();
         const path = new Set();
         const pause = Math.max(0, Number(delay) || 0);
-        for (const key of result.visitedOrder) {
-            if (animationId !== this.animationId) return;
-            visited.add(key);
-            this.drawGrid(visited, path);
-            if (pause) await new Promise(resolve => setTimeout(resolve, pause));
-        }
-        for (const key of result.pathOrder) {
-            if (animationId !== this.animationId) return;
-            path.add(key);
-            this.drawGrid(visited, path);
-            if (pause) await new Promise(resolve => setTimeout(resolve, pause));
-        }
+        this.searchAudio.prepare();
+        this.drawGrid(visited, path);
+
+        const animatePhase = (keys, cells, playSound) => new Promise(resolve => {
+            let index = 0;
+            let previousTime = 0;
+            let elapsed = 0;
+
+            const frame = (time) => {
+                if (animationId !== this.animationId) {
+                    resolve(false);
+                    return;
+                }
+
+                if (previousTime) elapsed += time - previousTime;
+                previousTime = time;
+                const batchSize = pause === 0 ? 8 : Math.max(1, Math.floor(elapsed / pause));
+                if (pause > 0) elapsed %= pause;
+
+                const end = Math.min(keys.length, index + batchSize);
+                while (index < end) {
+                    const key = keys[index];
+                    cells.add(key);
+                    playSound();
+                    const separator = key.indexOf(",");
+                    this.drawCell(
+                        Number(key.slice(0, separator)),
+                        Number(key.slice(separator + 1)),
+                        visited,
+                        path
+                    );
+                    index++;
+                }
+
+                if (index < keys.length) scheduleFrame(frame);
+                else resolve(true);
+            };
+
+            if (keys.length === 0) resolve(true);
+            else scheduleFrame(frame);
+        });
+
+        if (!await animatePhase(result.visitedOrder, visited, () => this.searchAudio.playVisited())) return;
+        if (!await animatePhase(result.pathOrder, path, () => this.searchAudio.playPathStep())) return;
         this.isVisualized = true;
     }
 
@@ -185,7 +228,32 @@ export class MapRenderer {
     }
 
     clearMap() {
-        this.reset();
+        this.animationId++;
+        this.grid = Array.from({ length: this.ROWS }, () => Array(this.COLS).fill(0));
+        this.isVisualized = false;
+        this.drawGrid();
+    }
+
+    drawCell(r, c, visitedSet, pathSet) {
+        const x = c * this.CELL_SIZE;
+        const y = r * this.CELL_SIZE;
+        const key = `${r},${c}`;
+
+        if (r === this.start.r && c === this.start.c) {
+            this.ctx.fillStyle = "#22c55e";
+        } else if (r === this.goal.r && c === this.goal.c) {
+            this.ctx.fillStyle = "#ef4444";
+        } else if (pathSet.has(key)) {
+            this.ctx.fillStyle = "#f59e0b";
+        } else if (visitedSet.has(key)) {
+            this.ctx.fillStyle = "#3b82f6";
+        } else if (this.grid[r][c] === 1) {
+            this.ctx.fillStyle = "#334155";
+        } else {
+            this.ctx.fillStyle = "#1e293b";
+        }
+
+        this.ctx.fillRect(x, y, this.CELL_SIZE - 1, this.CELL_SIZE - 1);
     }
 
     drawGrid(visited = [], path = []) {
@@ -197,38 +265,37 @@ export class MapRenderer {
 
         for (let r = 0; r < this.ROWS; r++) {
             for (let c = 0; c < this.COLS; c++) {
-                const x = c * this.CELL_SIZE;
-                const y = r * this.CELL_SIZE;
-                const key = `${r},${c}`;
-
-                if (r === this.start.r && c === this.start.c) {
-                    this.ctx.fillStyle = "#22c55e"; // Green
-                } else if (r === this.goal.r && c === this.goal.c) {
-                    this.ctx.fillStyle = "#ef4444"; // Red
-                } else if (pathSet.has(key)) {
-                    this.ctx.fillStyle = "#f59e0b"; // Yellow
-                } else if (visitedSet.has(key)) {
-                    this.ctx.fillStyle = "#3b82f6"; // Blue
-                } else if (this.grid[r][c] === 1) {
-                    this.ctx.fillStyle = "#334155"; // Dark Gray Wall
-                } else {
-                    this.ctx.fillStyle = "#1e293b"; // Dark Blue Empty
-                }
-
-                this.ctx.fillRect(x, y, this.CELL_SIZE - 1, this.CELL_SIZE - 1);
+                this.drawCell(r, c, visitedSet, pathSet);
             }
         }
     }
 }
 
 export function colorNode(nodeId) {
-    const nodes = document.querySelectorAll(".circle");
-    nodes.forEach(node => node.classList.remove("bg-yellow-500", "bg-green-500"));
-
-    const targetNode = nodes[nodeId];
+    const targetNode = document.querySelector(`[data-node-id="${nodeId}"]`);
     if (targetNode) {
-        targetNode.classList.add("bg-yellow-500");
+        targetNode.classList.add("route-visited");
     }
+}
+
+export function colorGraphTarget(nodeId) {
+    const targetNode = document.querySelector(`[data-node-id="${nodeId}"]`);
+    if (targetNode) {
+        targetNode.classList.remove("route-visited");
+        targetNode.classList.add("route-target");
+    }
+}
+
+export function colorGraphEdge(fromNode, toNode) {
+    const edge = [fromNode, toNode].sort((a, b) => a - b).join("-");
+    document.querySelector(`[data-edge="${edge}"]`)?.classList.add("path-active");
+}
+
+export function resetGraphRoute() {
+    document.querySelectorAll(".circle").forEach(node => {
+        node.classList.remove("route-visited", "route-target");
+    });
+    document.querySelectorAll("[data-edge]").forEach(edge => edge.classList.remove("path-active"));
 }
 
 export let mapRenderer = null;

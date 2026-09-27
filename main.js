@@ -1,4 +1,12 @@
-import { colorNode, mapRenderer } from './src/Renderers/map.js';
+import {
+    colorGraphEdge,
+    colorGraphTarget,
+    colorNode,
+    mapRenderer,
+    resetGraphRoute
+} from './src/Renderers/map.js';
+import { scheduleFrame } from './src/Utils/scheduleFrame.js';
+import { renderComplexityCharts } from './src/Renderers/complexityCharts.js';
 import { dijsktra } from './src/Algorithms/Dijskstra.js';
 import { astar } from './src/Algorithms/AStar.js';
 import { matrix, heuristic } from './src/Data/Graph.js';
@@ -47,10 +55,16 @@ export function startGraphRoute() {
     const input = document.getElementById("numSearch");
     const inputNumber = Math.min(4, Math.max(0, Number(input ? input.value : 0) || 0));
     const startTime = performance.now();
+    const previous = new Map();
     const result = selectedGraphAlgorithm === "Dijkstra"
-        ? dijsktra(matrix, 0)[inputNumber]
-        : astar(matrix, 0, inputNumber, heuristic);
+        ? dijsktra(matrix, 0, previous)[inputNumber]
+        : astar(matrix, 0, inputNumber, heuristic, previous);
     const elapsed = performance.now() - startTime;
+    const route = [inputNumber];
+    while (route[0] !== 0 && previous.has(route[0])) {
+        route.unshift(previous.get(route[0]));
+    }
+    if (route[0] !== 0) route.length = 0;
 
     const percorsoEl = document.getElementById("percorso");
     if (percorsoEl) {
@@ -63,18 +77,25 @@ export function startGraphRoute() {
     }
     const speedInput = document.getElementById("graphSpeed");
     const speed = Number(speedInput ? speedInput.value : 0) || 0;
-    animateGraphRoute(inputNumber, speed);
+    animateGraphRoute(route, speed);
 }
 
-async function animateGraphRoute(targetNode, delay) {
+async function animateGraphRoute(route, delay) {
     const animationId = ++graphAnimationId;
     const pause = Math.max(0, Number(delay) || 0);
-    const route = Array.from({ length: targetNode + 1 }, (_, node) => node);
+    resetGraphRoute();
 
-    for (const node of route) {
+    for (let index = 0; index < route.length; index++) {
         if (animationId !== graphAnimationId) return;
+        const node = route[index];
         colorNode(node);
-        if (pause) await new Promise(resolve => setTimeout(resolve, pause));
+        if (index > 0) colorGraphEdge(route[index - 1], node);
+        if (index === route.length - 1) colorGraphTarget(node);
+
+        await new Promise(resolve => scheduleFrame(() => {
+            if (pause) setTimeout(resolve, pause);
+            else resolve();
+        }));
     }
 }
 
@@ -123,4 +144,6 @@ window.addEventListener("DOMContentLoaded", () => {
     selectAlgorithm("Dijkstra", "node");
     bindSpeedControl("gridSpeed", "gridSpeedValue");
     bindSpeedControl("graphSpeed", "graphSpeedValue");
+    if (window.Chart) renderComplexityCharts();
+    else window.addEventListener("load", renderComplexityCharts, { once: true });
 });

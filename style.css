@@ -4,7 +4,9 @@
     --dark: #000120;
     --mid: #00293f;
     --main: #d78c00;
-    --light: #d1f8ff;
+    --main-dark: #b47500;
+    --light: rgb(209, 248, 255);
+    --lightLow: hsla(189, 100%, 91%, 0.2);
     /* --main: #3b82f6; */
 }
 
@@ -19,8 +21,16 @@
     color: whitesmoke;
 }
 
+.outline {
+    outline-width: 1px !important;
+}
+
 button {
     cursor: pointer;
+}
+
+button:active {
+    scale: 0.95;
 }
 
 
@@ -79,16 +89,40 @@ body {
 .circle {
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
     z-index: 100 !important;
+    transition: background-color 180ms ease, box-shadow 180ms ease;
 }
 
-.branch{
+.circle.route-visited {
+    background-color: #f59e0b !important;
+    color: var(--dark);
+}
+
+.circle.route-target {
+    background-color: var(--light) !important;
+    color: black;
+    box-shadow: 0 0 30px rgb(209, 248, 255, 0.55);
+}
+
+.branch {
     z-index: 10;
+    background-color: var(--main) !important;
+    transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.map [data-edge].path-active {
+    background-color: var(--main) !important;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--main) 65%, transparent);
+}
+
+.complexity-chart {
+    position: relative;
+    width: 100%;
+    height: 240px;
 }
 
 /* Active button styling */
 .selectedButton {
-    background-color: var(--light) !important;
+    background-color: #d1f8ff !important;
     color: var(--dark) !important;
-    font-weight: 600;
+    outline-color: transparent;
 }
-
