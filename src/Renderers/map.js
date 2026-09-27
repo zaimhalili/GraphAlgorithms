@@ -15,6 +15,7 @@ export class MapRenderer {
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = this.COLS * this.CELL_SIZE;
         this.canvas.height = this.ROWS * this.CELL_SIZE;
+        this.cellGap = 1;
         const palette = getComputedStyle(document.documentElement);
         this.colors = {
             start: palette.getPropertyValue("--grid-start").trim(),
@@ -262,12 +263,18 @@ export class MapRenderer {
             this.ctx.fillStyle = this.colors.empty;
         }
 
-        this.ctx.fillRect(x, y, this.CELL_SIZE - 1, this.CELL_SIZE - 1);
+        const cellFillSize = this.CELL_SIZE - this.cellGap;
+        this.ctx.fillRect(x, y, cellFillSize, cellFillSize);
     }
 
     drawGrid(visited = [], path = []) {
         if (!this.ctx) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        const displayWidth = this.canvas.getBoundingClientRect().width || this.canvas.width;
+        this.cellGap = Math.min(
+            this.CELL_SIZE - 1,
+            Math.max(1, Math.round(this.canvas.width / displayWidth))
+        );
 
         const visitedSet = visited instanceof Set ? visited : new Set(visited.map(v => `${v.r},${v.c}`));
         const pathSet = path instanceof Set ? path : new Set(path.map(p => `${p.r},${p.c}`));

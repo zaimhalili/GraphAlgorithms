@@ -168,23 +168,23 @@
     <section class="complexity-section w-full max-w-[1200px] flex flex-col gap-6 pt-20 pb-20"
         aria-labelledby="complexityHeading">
         <div>
-            <h2 id="complexityHeading" class="text-2xl font-semibold">Algorithm Performance</h2>
+            <h2 id="complexityHeading" class="text-2xl font-semibold">Complexity Growth</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
             <article class="min-w-0 border-t border-[var(--lightLow)] pt-4">
                 <h3 class="text-lg font-semibold text-[var(--main)]">Dijkstra</h3>
-                <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">O((V + E) log V)</p>
+                <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">Min-heap · O((V + E) log V)</p>
                 <div class="complexity-chart">
                     <canvas id="dijkstraComplexityChart" role="img"
-                        aria-label="Dijkstra execution time by number of nodes checked"></canvas>
+                        aria-label="Dijkstra operation growth by number of vertices"></canvas>
                 </div>
             </article>
             <article class="min-w-0 border-t border-[var(--lightLow)] pt-4">
                 <h3 class="text-lg font-semibold text-[var(--main)]">A*</h3>
-                <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">O(b^d) worst case</p>
+                <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">Worst case · O(b^d), b = 2</p>
                 <div class="complexity-chart">
                     <canvas id="astarComplexityChart" role="img"
-                        aria-label="A star execution time by number of nodes checked"></canvas>
+                        aria-label="A star estimated nodes explored by search depth"></canvas>
                 </div>
             </article>
         </div>

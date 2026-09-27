@@ -51,7 +51,7 @@ export function startGridRoute() {
         const selectedLabel = selectedGridAlgorithm === "Astar" ? "A*"
             : selectedGridAlgorithm === "bidirectionalAstar" ? "Bidirectional A*"
                 : selectedGridAlgorithm;
-        comparison.textContent = `${selectedLabel} search time: ${formatSearchTime(elapsed)}`;
+        comparison.textContent = `${selectedLabel} compute time (animation excluded): ${formatSearchTime(elapsed)}`;
     }
     const status = document.getElementById("gridStatus");
     if (status) status.textContent = selected.found ? "Path found" : "No path found";
@@ -79,7 +79,7 @@ export function startGraphRoute() {
     const comparison = document.getElementById("graphComparison");
     if (comparison) {
         const selectedLabel = selectedGraphAlgorithm === "Astar" ? "A*" : selectedGraphAlgorithm;
-        comparison.textContent = `${selectedLabel} search time: ${formatSearchTime(elapsed)}`;
+        comparison.textContent = `${selectedLabel} compute time (animation excluded): ${formatSearchTime(elapsed)}`;
     }
     const speedInput = document.getElementById("graphSpeed");
     const speed = Number(speedInput ? speedInput.value : 0) || 0;

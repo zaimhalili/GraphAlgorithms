@@ -10,10 +10,11 @@
     --lightLow: rgba(88, 129, 87, 0.16);
     --grid-empty: #263a30;
     --grid-wall: #344e41;
-    --grid-visited: #a3b18a;
-    --grid-path: #dad7cd;
-    --grid-start: #588157;
-    --grid-goal: #3a5a40;
+    --grid-visited: #588157;
+    --grid-path: #a3b18a;
+    --grid-start: #3a5a40;
+    --grid-goal: #dad7cd;
+    --grid-lines: #dad7cd;
 }
 
 * {
@@ -102,11 +103,6 @@ body {
     transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.circle:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 18px rgba(38, 58, 48, 0.34);
-}
-
 .circle.route-visited {
     background-color: var(--mid) !important;
     color: var(--light);
@@ -120,7 +116,7 @@ body {
 
 .branch {
     z-index: 10;
-    background-color: rgba(52, 78, 65, 0.45) !important;
+    background-color: var(--main) !important;
     transition: background-color 180ms ease, box-shadow 180ms ease;
 }
 
@@ -135,6 +131,7 @@ body {
     height: auto;
     border-radius: 6px;
     outline: 1px solid rgba(52, 78, 65, 0.3);
+    background-color: var(--grid-lines);
 }
 
 .complexity-chart {
