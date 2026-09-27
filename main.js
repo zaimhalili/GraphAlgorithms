@@ -74,7 +74,7 @@ export function startGraphRoute() {
 
     const percorsoEl = document.getElementById("percorso");
     if (percorsoEl) {
-        percorsoEl.textContent = `Percorso più corto: ${result !== undefined ? result : "N/A"}`;
+        percorsoEl.textContent = `Shortest path: ${result !== undefined ? result : "N/A"}`;
     }
     const comparison = document.getElementById("graphComparison");
     if (comparison) {
