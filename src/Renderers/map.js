@@ -1,7 +1,8 @@
 import { MinHeap } from "../Models/MinHeap.js";
+import { bidirectionalAstar } from "../Algorithms/BidirectionalAStar.js";
 
 export class MapRenderer {
-    constructor(canvasId = "gridCanvas", rows = 40, cols = 80, cellSize = 12) {
+    constructor(canvasId = "gridCanvas", rows = 40, cols = 100, cellSize = 12) {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) return;
 
@@ -83,6 +84,10 @@ export class MapRenderer {
     }
 
     findRoute(algorithm = "Dijkstra") {
+        if (algorithm === "bidirectionalAstar") {
+            return bidirectionalAstar(this.grid, this.start, this.goal);
+        }
+
         const visited = new Set();
         const visitedOrder = [];
         const path = new Set();

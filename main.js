@@ -11,9 +11,12 @@ export function selectAlgorithm(name, graph = "node") {
     const isGrid = graph === "grid";
     const dijkstraBtn = document.getElementById(isGrid ? "dijkstraGrid" : "dijsktra");
     const astarBtn = document.getElementById(isGrid ? "astarGrid" : "astar");
+    const bidirectionalAstarBtn = isGrid ? document.getElementById("bidirectionalAstar") : null;
+
 
     if (dijkstraBtn) dijkstraBtn.classList.toggle("selectedButton", name === "Dijkstra");
     if (astarBtn) astarBtn.classList.toggle("selectedButton", name === "Astar");
+    if (bidirectionalAstarBtn) bidirectionalAstarBtn.classList.toggle("selectedButton", name === "bidirectionalAstar");
 
     if (isGrid) selectedGridAlgorithm = name;
     else selectedGraphAlgorithm = name;
@@ -31,7 +34,9 @@ export function startGridRoute() {
 
     const comparison = document.getElementById("gridComparison");
     if (comparison) {
-        const selectedLabel = selectedGridAlgorithm === "Astar" ? "A*" : selectedGridAlgorithm;
+        const selectedLabel = selectedGridAlgorithm === "Astar" ? "A*"
+            : selectedGridAlgorithm === "bidirectionalAstar" ? "Bidirectional A*"
+                : selectedGridAlgorithm;
         comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(3)} ms`;
     }
     const status = document.getElementById("gridStatus");
@@ -54,7 +59,7 @@ export function startGraphRoute() {
     const comparison = document.getElementById("graphComparison");
     if (comparison) {
         const selectedLabel = selectedGraphAlgorithm === "Astar" ? "A*" : selectedGraphAlgorithm;
-        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(5)} ms`;
+        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(3)} ms`;
     }
     const speedInput = document.getElementById("graphSpeed");
     const speed = Number(speedInput ? speedInput.value : 0) || 0;

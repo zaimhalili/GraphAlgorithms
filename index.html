@@ -7,37 +7,26 @@
     <title>Pathfinding Map Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./style.css">
-    <style>
-        /* CSS Variables matching your layout */
-        :root {
-            --light: #ffffff;
-            --dark: #000120;
-            --main: #3b82f6;
-        }
-
-        /* Active button styling */
-        .selectedButton {
-            background-color: var(--light) !important;
-            color: var(--dark) !important;
-            font-weight: 600;
-        }
-    </style>
 </head>
 
 <body class="bg-[#000120] text-white min-h-screen flex flex-col items-center p-6 gap-8">
 
     <!-- map -->
-    <section class="w-full max-w-[1500px] flex flex-col gap-4">
+    <section class="w-full max-w-[1200px] flex flex-col gap-4">
         <div class="flex justify-between w-full items-center">
-            <h2 class="text-2xl font-semibold">Pathfinding on a Canvas Grid</h2>
+            <h2 class="text-2xl font-semibold">Pathfinding on a Grid</h2>
             <div class="flex">
                 <button type="button" id="dijkstraGrid" onclick="selectAlgorithm('Dijkstra', 'grid')"
                     class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tl-2xl rounded-bl-2xl text-lg">
                     Dijkstra
                 </button>
                 <button type="button" id="astarGrid" onclick="selectAlgorithm('Astar', 'grid')"
-                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] text-lg">
                     A*
+                </button>
+                <button type="button" id="bidirectionalAstar" onclick="selectAlgorithm('bidirectionalAstar', 'grid')"
+                    class="border border-[var(--light)]/50 text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                    Bidirectional A*
                 </button>
             </div>
         </div>
@@ -75,12 +64,13 @@
 
         <label for="gridSpeed" class="flex items-center gap-3 text-sm text-[var(--light)]/70">
             Animation speed
-            <input id="gridSpeed" type="range" min="0" max="80" step="5" value="10" class="w-48">
+            <input id="gridSpeed" type="range" min="0" max="80" step="5" value="10" class="w-48 cursor-pointer">
             <output id="gridSpeedValue">10 ms</output>
         </label>
 
-        <div class="map flex justify-center items-center my-4">
-            <canvas id="gridCanvas" class="border border-slate-700 rounded-lg shadow-2xl cursor-pointer"></canvas>
+        <div class="map flex justify-center items-center my-4 border border-slate-800">
+            <canvas id="gridCanvas"
+                class="border border-slate-700 rounded-lg shadow-2xl cursor-pointer overflow-x-visible max-w-[1200px]"></canvas>
             <p id="gridStatus" class="sr-only" aria-live="polite">Ready</p>
         </div>
         <p id="gridComparison" class="text-lg text-[#d78c00]" aria-live="polite">Select an algorithm and start the
@@ -88,9 +78,9 @@
     </section>
 
     <!-- Small Graph -->
-    <section class="w-full max-w-[1500px] flex flex-col gap-4">
+    <section class="w-full max-w-[1200px] flex flex-col gap-4">
         <div class="flex justify-between items-center w-full">
-            <h2 class="text-2xl font-semibold">Pathfinding on a Node Graph</h2>
+            <h2 class="text-2xl font-semibold">Pathfinding on a Graph</h2>
             <div class="flex items-center gap-4">
                 <!-- Search Input for Node Selection -->
                 <div class="flex items-center gap-2">
@@ -117,8 +107,8 @@
 
         <label for="graphSpeed" class="flex items-center gap-3 text-sm text-[var(--light)]/70">
             Animation speed
-            <input id="graphSpeed" type="range" min="0" max="80" step="5" value="10" class="w-48">
-            <output id="graphSpeedValue">10 ms</output>
+            <input id="graphSpeed" type="range" min="0" max="300" step="10" value="150" class="w-48 cursor-pointer">
+            <output id="graphSpeedValue">150 ms</output>
         </label>
 
         <main class="map flex items-center justify-center gap-10 border border-slate-800 p-8 rounded-lg w-full">
@@ -132,17 +122,18 @@
                     <div
                         class="circle one h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         1
-                        <div class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg]">
+                        <div
+                            class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg] branch">
                         </div>
-                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90 branch"></div>
                         <p class="absolute -left-8 bottom-1 text-yellow-500 text-lg">4</p>
                         <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
                     </div>
                     <div
                         class="circle four h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         4
-                        <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
-                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90"></div>
+                        <div class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full branch"></div>
+                        <div class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90 branch"></div>
                         <p class="absolute -left-12 top-1 text-yellow-500 text-lg">6</p>
                     </div>
                 </div>
@@ -156,7 +147,7 @@
                     <div
                         class="circle three h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         3
-                        <div class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full"></div>
+                        <div class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full branch"></div>
                         <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
                         <p class="absolute -top-14 right-1 text-yellow-500 text-lg">10</p>
                     </div>
@@ -168,7 +159,7 @@
             route.</p>
     </section>
 
-    <!-- Scripts using ES Modules -->
+    <!-- Scripts -->
     <script type="module" src="./main.js"></script>
 </body>
 
