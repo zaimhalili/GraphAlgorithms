@@ -1,13 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
 :root {
-    --dark: #000120;
-    --mid: #00293f;
-    --main: #d78c00;
-    --main-dark: #b47500;
-    --light: rgb(209, 248, 255);
-    --lightLow: hsla(189, 100%, 91%, 0.2);
-    /* --main: #3b82f6; */
+    --dark: #dad7cd;
+    --mid: #a3b18a;
+    --main: #588157;
+    --main-dark: #3a5a40;
+    --light: #344e41;
+    --ink: #263a30;
+    --lightLow: rgba(88, 129, 87, 0.16);
+    --grid-empty: #263a30;
+    --grid-wall: #344e41;
+    --grid-visited: #a3b18a;
+    --grid-path: #dad7cd;
+    --grid-start: #588157;
+    --grid-goal: #3a5a40;
 }
 
 * {
@@ -17,8 +23,8 @@
 }
 
 *::selection {
-    background: #000;
-    color: whitesmoke;
+    background: var(--main-dark);
+    color: var(--dark);
 }
 
 .outline {
@@ -27,19 +33,20 @@
 
 button {
     cursor: pointer;
+    font: inherit;
 }
 
 button:active {
-    scale: 0.95;
+    transform: translateY(1px) scale(0.98);
 }
 
-
 body {
-    background-color: var(--light);
+    background-color: var(--dark);
+    color: var(--light);
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 2rem 8rem;
+    padding: 2rem clamp(1rem, 6vw, 6rem);
     flex-direction: column;
 }
 
@@ -51,15 +58,15 @@ body {
 .choices button {
     font-size: 2rem;
     background-color: var(--mid);
-    color: var(--light);
+    color: var(--ink);
     padding: 1rem 2rem;
-    border-radius: 10px;
+    border-radius: 6px;
     transition: 0.1s ease-in-out;
-    box-shadow: 0px 7px 0px white;
+    box-shadow: 0px 4px 0px var(--main-dark);
 }
 
 .choices button:hover {
-    background-color: var(--main);
+    background-color: var(--main-dark);
     color: var(--dark);
     /* scale: 1.05; */
 }
@@ -70,42 +77,50 @@ body {
 }
 
 .choices button.selectedButton {
-    background-color: var(--main);
+    background-color: var(--main-dark) !important;
+    color: var(--dark) !important;
 }
 
 .map {
     background-color: var(--mid);
     width: 100%;
     min-height: 480px;
-    box-shadow: inset 0 0 50px black;
-    border-radius: 12px;
+    box-shadow: inset 0 0 36px rgba(52, 78, 65, 0.2);
+    border: 1px solid rgba(52, 78, 65, 0.18);
+    border-radius: 8px;
 }
 
 .visited {
-    background-color: var(--dark) !important;
-    color: white;
+    background-color: var(--grid-visited) !important;
+    color: var(--light);
 }
 
 .circle {
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    color: var(--dark);
+    box-shadow: 0 4px 14px rgba(38, 58, 48, 0.28);
     z-index: 100 !important;
-    transition: background-color 180ms ease, box-shadow 180ms ease;
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.circle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(38, 58, 48, 0.34);
 }
 
 .circle.route-visited {
-    background-color: #f59e0b !important;
-    color: var(--dark);
+    background-color: var(--mid) !important;
+    color: var(--light);
 }
 
 .circle.route-target {
-    background-color: var(--light) !important;
-    color: black;
-    box-shadow: 0 0 30px rgb(209, 248, 255, 0.55);
+    background-color: var(--main-dark) !important;
+    color: var(--dark);
+    box-shadow: 0 0 24px rgba(58, 90, 64, 0.4);
 }
 
 .branch {
     z-index: 10;
-    background-color: var(--main) !important;
+    background-color: rgba(52, 78, 65, 0.45) !important;
     transition: background-color 180ms ease, box-shadow 180ms ease;
 }
 
@@ -114,15 +129,186 @@ body {
     box-shadow: 0 0 10px color-mix(in srgb, var(--main) 65%, transparent);
 }
 
+.grid-canvas {
+    display: block;
+    width: min(100%, 1200px);
+    height: auto;
+    border-radius: 6px;
+    outline: 1px solid rgba(52, 78, 65, 0.3);
+}
+
 .complexity-chart {
     position: relative;
     width: 100%;
-    height: 240px;
+    min-width: 0;
+    height: 280px;
 }
 
-/* Active button styling */
-.selectedButton {
-    background-color: #d1f8ff !important;
+.complexity-chart canvas {
+    max-width: 100%;
+}
+
+.algorithm-option,
+.tool-button {
+    border: 1px solid rgba(52, 78, 65, 0.18);
+    background-color: var(--lightLow) !important;
+    color: var(--light) !important;
+    transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.algorithm-option:hover,
+.tool-button:hover {
+    background-color: var(--mid) !important;
+    color: var(--ink) !important;
+}
+
+.algorithm-option.selectedButton,
+.tool-button.selectedToolButton {
+    background-color: var(--main-dark) !important;
     color: var(--dark) !important;
-    outline-color: transparent;
+    box-shadow: inset 0 0 0 1px rgba(52, 78, 65, 0.22);
+}
+
+.algorithm-option.selectedButton:hover,
+.tool-button.selectedToolButton:hover {
+    background-color: var(--main-dark) !important;
+    color: var(--dark) !important;
+}
+
+.route-action {
+    background-color: var(--main-dark) !important;
+    color: var(--dark) !important;
+    border: 1px solid rgba(52, 78, 65, 0.15);
+    transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.route-action:hover {
+    background-color: var(--main-dark) !important;
+    box-shadow: 0 5px 14px rgba(58, 90, 64, 0.2);
+}
+
+.algorithm-option:focus-visible,
+.tool-button:focus-visible,
+.route-action:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--main);
+    outline-offset: 2px;
+}
+
+.comparison-result {
+    color: var(--main-dark);
+    font-variant-numeric: tabular-nums;
+}
+
+.target-input {
+    background-color: rgba(163, 177, 138, 0.24);
+    border: 1px solid rgba(52, 78, 65, 0.24);
+    color: var(--light);
+}
+
+input[type="range"],
+input[type="checkbox"] {
+    accent-color: var(--main);
+}
+
+.project-footer {
+    background-color: var(--mid);
+    color: var(--ink);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(52, 78, 65, 0.1);
+    animation: footer-enter 600ms ease-out both;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.project-footer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(52, 78, 65, 0.18);
+}
+
+@keyframes footer-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 1rem;
+    }
+
+    .map {
+        min-height: 360px;
+    }
+
+    .grid-header,
+    .grid-controls,
+    .graph-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .grid-header .algorithm-options,
+    .grid-controls>div {
+        flex-wrap: wrap;
+    }
+
+    .graph-header .graph-toolbar-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+    }
+
+    .graph-header .graph-toolbar-controls> :first-child,
+    .graph-header .graph-toolbar-controls>button {
+        grid-column: 1 / -1;
+    }
+
+    .graph-map {
+        min-height: 0;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .graph-map .circle {
+        width: 3.5rem;
+        height: 3.5rem;
+        font-size: 1.75rem;
+    }
+
+    .graph-map .column {
+        gap: 2.5rem;
+    }
+
+    .graph-map .pair {
+        gap: 3rem;
+    }
+
+    .graph-map #percorso {
+        flex-basis: 100%;
+        text-align: center;
+    }
+
+    .complexity-chart {
+        height: 240px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
 }

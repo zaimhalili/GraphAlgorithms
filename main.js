@@ -15,6 +15,12 @@ let selectedGridAlgorithm = "Dijkstra";
 let selectedGraphAlgorithm = "Dijkstra";
 let graphAnimationId = 0;
 
+function formatSearchTime(milliseconds) {
+    return milliseconds >= 1000
+        ? `${(milliseconds / 1000).toFixed(2)} s`
+        : `${milliseconds.toFixed(3)} ms`;
+}
+
 export function selectAlgorithm(name, graph = "node") {
     const isGrid = graph === "grid";
     const dijkstraBtn = document.getElementById(isGrid ? "dijkstraGrid" : "dijsktra");
@@ -45,7 +51,7 @@ export function startGridRoute() {
         const selectedLabel = selectedGridAlgorithm === "Astar" ? "A*"
             : selectedGridAlgorithm === "bidirectionalAstar" ? "Bidirectional A*"
                 : selectedGridAlgorithm;
-        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(3)} ms`;
+        comparison.textContent = `${selectedLabel} search time: ${formatSearchTime(elapsed)}`;
     }
     const status = document.getElementById("gridStatus");
     if (status) status.textContent = selected.found ? "Path found" : "No path found";
@@ -73,7 +79,7 @@ export function startGraphRoute() {
     const comparison = document.getElementById("graphComparison");
     if (comparison) {
         const selectedLabel = selectedGraphAlgorithm === "Astar" ? "A*" : selectedGraphAlgorithm;
-        comparison.textContent = `${selectedLabel}: ${elapsed.toFixed(3)} ms`;
+        comparison.textContent = `${selectedLabel} search time: ${formatSearchTime(elapsed)}`;
     }
     const speedInput = document.getElementById("graphSpeed");
     const speed = Number(speedInput ? speedInput.value : 0) || 0;
@@ -110,6 +116,9 @@ function bindSpeedControl(inputId, outputId) {
 
 export function setGridMode(mode) {
     if (mapRenderer) mapRenderer.setMode(mode);
+    document.querySelectorAll("[data-grid-mode]").forEach(button => {
+        button.classList.toggle("selectedToolButton", button.dataset.gridMode === mode);
+    });
 }
 
 export function visualizeGrid() {
@@ -142,6 +151,7 @@ window.resetGrid = resetGrid;
 window.addEventListener("DOMContentLoaded", () => {
     selectAlgorithm("Dijkstra", "grid");
     selectAlgorithm("Dijkstra", "node");
+    setGridMode("wall");
     bindSpeedControl("gridSpeed", "gridSpeedValue");
     bindSpeedControl("graphSpeed", "graphSpeedValue");
     if (window.Chart) renderComplexityCharts();

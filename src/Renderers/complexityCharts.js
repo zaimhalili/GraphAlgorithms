@@ -1,22 +1,85 @@
-const axisColor = "rgba(209, 248, 255, 0.68)";
-const gridColor = "rgba(209, 248, 255, 0.12)";
+import { mapRenderer } from "./map.js";
 
-function createComplexityChart(canvasId, labels, values, options) {
+const gridSizes = [8, 12, 16, 20, 24, 28, 32, 36, 40];
+const sampleRuns = 9;
+const timingBatchSize = 7;
+
+function median(values) {
+    const sorted = [...values].sort((a, b) => a - b);
+    return sorted[Math.floor(sorted.length / 2)];
+}
+
+function measureAlgorithm(renderer, algorithm, size) {
+    renderer.ROWS = size;
+    renderer.COLS = size;
+    renderer.grid = Array.from({ length: size }, () => Array(size).fill(0));
+    renderer.start = { r: 0, c: 0 };
+    renderer.goal = { r: size - 1, c: size - 1 };
+    for (let run = 0; run < 3; run++) renderer.findRoute(algorithm);
+
+    const durations = [];
+    let result;
+    for (let sample = 0; sample < sampleRuns; sample++) {
+        const startTime = performance.now();
+        for (let run = 0; run < timingBatchSize; run++) {
+            result = renderer.findRoute(algorithm);
+        }
+        durations.push((performance.now() - startTime) / timingBatchSize);
+    }
+
+    return {
+        x: result.visitedOrder.length + (result.found ? 1 : 0),
+        y: median(durations)
+    };
+}
+
+function collectMeasurements() {
+    if (!mapRenderer) return null;
+
+    const original = {
+        rows: mapRenderer.ROWS,
+        columns: mapRenderer.COLS,
+        grid: mapRenderer.grid,
+        start: mapRenderer.start,
+        goal: mapRenderer.goal
+    };
+    const dijkstra = [];
+    const astar = [];
+
+    try {
+        for (const size of gridSizes) {
+            dijkstra.push(measureAlgorithm(mapRenderer, "Dijkstra", size));
+            astar.push(measureAlgorithm(mapRenderer, "Astar", size));
+        }
+    } finally {
+        mapRenderer.ROWS = original.rows;
+        mapRenderer.COLS = original.columns;
+        mapRenderer.grid = original.grid;
+        mapRenderer.start = original.start;
+        mapRenderer.goal = original.goal;
+    }
+
+    return { dijkstra, astar };
+}
+
+function createPerformanceChart(canvasId, points, palette) {
     const canvas = document.getElementById(canvasId);
     if (!canvas || !window.Chart) return;
+
+    const maxNodes = Math.max(...points.map(point => point.x));
+    const maxTime = Math.max(0.05, Math.max(...points.map(point => point.y)) * 1.03);
 
     new window.Chart(canvas, {
         type: "line",
         data: {
-            labels,
             datasets: [{
-                data: values,
-                borderColor: options.color,
-                backgroundColor: options.fill,
+                data: points,
+                borderColor: palette.main,
+                backgroundColor: palette.fill,
                 borderWidth: 2,
-                pointRadius: 2,
-                pointHoverRadius: 4,
-                pointBackgroundColor: options.color,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: palette.main,
                 fill: true,
                 tension: 0.25
             }]
@@ -29,25 +92,38 @@ function createComplexityChart(canvasId, labels, values, options) {
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: context => `Operations: ${new Intl.NumberFormat().format(context.raw)}`
+                        label: context => {
+                            const { x, y } = context.raw;
+                            return `${new Intl.NumberFormat().format(x)} nodes checked · ${y.toFixed(3)} ms`;
+                        }
                     }
                 }
             },
             scales: {
                 x: {
-                    title: { display: true, text: options.xTitle, color: axisColor, font: { size: 14 } },
-                    ticks: { color: axisColor, maxTicksLimit: 7, font: { size: 14 } },
-                    grid: { color: gridColor }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: "Number of operations", color: axisColor, font: { size: 14 } },
+                    type: "linear",
+                    min: 0,
+                    max: maxNodes,
+                    title: { display: true, text: "Nodes checked", color: palette.axis, font: { size: 14 } },
                     ticks: {
-                        color: axisColor,
+                        color: palette.axis,
+                        maxTicksLimit: 7,
                         font: { size: 14 },
                         callback: value => new Intl.NumberFormat(undefined, { notation: "compact" }).format(value)
                     },
-                    grid: { color: gridColor }
+                    grid: { color: palette.grid }
+                },
+                y: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: maxTime,
+                    title: { display: true, text: "Execution time (ms)", color: palette.axis, font: { size: 14 } },
+                    ticks: {
+                        color: palette.axis,
+                        font: { size: 14 },
+                        callback: value => value.toFixed(value < 1 ? 2 : 1)
+                    },
+                    grid: { color: palette.grid }
                 }
             }
         }
@@ -57,30 +133,22 @@ function createComplexityChart(canvasId, labels, values, options) {
 export function renderComplexityCharts() {
     if (!window.Chart) return;
 
-    window.Chart.defaults.font.family = "Inter, sans-serif";
-    window.Chart.defaults.color = axisColor;
+    const styles = getComputedStyle(document.documentElement);
+    const main = styles.getPropertyValue("--main").trim();
+    const palette = {
+        main,
+        fill: `${main}24`,
+        axis: styles.getPropertyValue("--light").trim(),
+        grid: `${main}35`
+    };
+    window.Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    window.Chart.defaults.color = palette.axis;
 
-    const vertexCounts = [8, 16, 32, 64, 128, 256, 512, 1024];
-    createComplexityChart(
-        "dijkstraComplexityChart",
-        vertexCounts.map(String),
-        vertexCounts.map(vertices => Math.round(vertices * Math.log2(vertices))),
-        {
-            color: "#d78c00",
-            fill: "rgba(215, 140, 0, 0.12)",
-            xTitle: "Vertices (V)"
-        }
-    );
+    const measurements = collectMeasurements();
+    if (!measurements) return;
 
-    const depths = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    createComplexityChart(
-        "astarComplexityChart",
-        depths.map(String),
-        depths.map(depth => 2 ** depth),
-        {
-            color: "#d78c00",
-            fill: "rgba(215, 140, 0, 0.12)",
-            xTitle: "Depth (d)"
-        }
-    );
+    measurements.dijkstra.sort((a, b) => a.x - b.x);
+    measurements.astar.sort((a, b) => a.x - b.x);
+    createPerformanceChart("dijkstraComplexityChart", measurements.dijkstra, palette);
+    createPerformanceChart("astarComplexityChart", measurements.astar, palette);
 }

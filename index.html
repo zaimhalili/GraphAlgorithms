@@ -10,54 +10,51 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 
-<body class="bg-[#000120] text-white min-h-screen flex flex-col items-center p-6 gap-8">
+<body class="min-h-screen flex flex-col items-center gap-8">
 
     <!-- map -->
     <section class="w-full max-w-[1200px] flex flex-col gap-4">
-        <div class="flex justify-between w-full items-center">
+        <div class="grid-header flex justify-between w-full items-center">
             <h2 class="text-2xl font-semibold">Pathfinding on a Grid</h2>
-            <div class="flex">
+            <div class="algorithm-options flex">
                 <button type="button" id="dijkstraGrid" onclick="selectAlgorithm('Dijkstra', 'grid')"
-                    class="!bg-[var(--lightLow)] !text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tl-2xl rounded-bl-2xl text-lg">
+                    class="algorithm-option px-4 py-2 rounded-l-md text-lg">
                     Dijkstra
                 </button>
                 <button type="button" id="astarGrid" onclick="selectAlgorithm('Astar', 'grid')"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] text-lg">
+                    class="algorithm-option px-4 py-2 text-lg">
                     A*
                 </button>
                 <button type="button" id="bidirectionalAstar" onclick="selectAlgorithm('bidirectionalAstar', 'grid')"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                    class="algorithm-option px-4 py-2 rounded-r-md text-lg">
                     Bidirectional A*
                 </button>
             </div>
         </div>
 
-        <div class="flex justify-between items-center w-full">
+        <div class="grid-controls flex justify-between items-center w-full">
             <div class="flex gap-2">
-                <button type="button" onclick="setGridMode('wall')"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                <button type="button" data-grid-mode="wall" onclick="setGridMode('wall')"
+                    class="tool-button px-4 py-2 rounded-md">
                     Wall
                 </button>
-                <button type="button" onclick="setGridMode('start')"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                <button type="button" data-grid-mode="start" onclick="setGridMode('start')"
+                    class="tool-button px-4 py-2 rounded-md">
                     Start
                 </button>
-                <button type="button" onclick="setGridMode('end')"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                <button type="button" data-grid-mode="end" onclick="setGridMode('end')"
+                    class="tool-button px-4 py-2 rounded-md">
                     End
                 </button>
             </div>
             <div class="flex gap-2">
-                <button type="button" onclick="startGridRoute()"
-                    class="px-4 py-2 transition-all bg-[var(--main)] hover:bg-[var(--main-dark)] rounded-2xl text-lg text-white">
+                <button type="button" onclick="startGridRoute()" class="route-action px-4 py-2 rounded-md text-lg">
                     Start Route
                 </button>
-                <button type="button" onclick="clearMap()"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                <button type="button" onclick="clearMap()" class="tool-button px-4 py-2 rounded-md">
                     Clear Map
                 </button>
-                <button type="button" onclick="resetGrid()"
-                    class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-2xl">
+                <button type="button" onclick="resetGrid()" class="tool-button px-4 py-2 rounded-md">
                     Reset
                 </button>
             </div>
@@ -73,38 +70,36 @@
             Search sounds
         </label>
 
-        <div class="map flex justify-center items-center my-4 outline outline-slate-800">
-            <canvas id="gridCanvas"
-                class="outline outline-slate-700 rounded-lg shadow-2xl cursor-pointer overflow-x-visible max-w-[1200px]"></canvas>
+        <div class="map flex justify-center items-center my-4">
+            <canvas id="gridCanvas" class="grid-canvas cursor-pointer max-w-[1200px]"></canvas>
             <p id="gridStatus" class="sr-only" aria-live="polite">Ready</p>
         </div>
-        <p id="gridComparison" class="text-lg text-[#d78c00]" aria-live="polite">Select an algorithm and start the
+        <p id="gridComparison" class="comparison-result text-lg" aria-live="polite">Select an algorithm and start the
             route.</p>
     </section>
 
     <!-- Small Graph -->
     <section class="w-full max-w-[1200px] flex flex-col gap-4 pt-20">
-        <div class="flex justify-between items-center w-full">
+        <div class="graph-header flex justify-between items-center w-full">
             <h2 class="text-2xl font-semibold">Pathfinding on a Graph</h2>
-            <div class="flex items-center gap-4">
+            <div class="graph-toolbar-controls flex items-center gap-4">
                 <!-- Search Input for Node Selection -->
                 <div class="flex items-center gap-2">
                     <label for="numSearch" class="text-lg text-[var(--light)]/70">Target Node:</label>
                     <input type="number" id="numSearch" min="0" max="4" value="3"
-                        class="px-4 py-2 bg-slate-800 outline outline-slate-600 rounded text-center text-white focus:outline-none focus:outline-blue-500" />
+                        class="target-input px-4 py-2 rounded-md text-center" />
                 </div>
                 <div class="flex">
                     <button type="button" id="dijsktra" onclick="selectAlgorithm('Dijkstra', 'node')"
-                        class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tl-2xl rounded-bl-2xl text-lg">
+                        class="algorithm-option px-4 py-2 rounded-l-md text-lg">
                         Dijkstra
                     </button>
                     <button type="button" id="astar" onclick="selectAlgorithm('Astar', 'node')"
-                        class="!bg-[var(--lightLow)] text-[var(--light)]/50 px-4 py-2 transition-all hover:!bg-[var(--light)] hover:text-[var(--dark)] rounded-tr-2xl rounded-br-2xl text-lg">
+                        class="algorithm-option px-4 py-2 rounded-r-md text-lg">
                         A*
                     </button>
                 </div>
-                <button type="button" onclick="startGraphRoute()"
-                    class="px-4 py-2 transition-all bg-[var(--main)] hover:bg-[var(--main-dark)] rounded-2xl text-lg text-white">
+                <button type="button" onclick="startGraphRoute()" class="route-action px-4 py-2 rounded-md text-lg">
                     Start Route
                 </button>
             </div>
@@ -118,68 +113,70 @@
 
 
         <!-- Small Graph: Leaves + Branches -->
-        <main class="map flex items-center justify-center gap-10 outline outline-slate-800 p-8 rounded-lg w-full">
+        <main class="map graph-map flex items-center justify-center gap-10 p-8 w-full">
             <div data-node-id="0"
-                class="circle zero h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
+                class="circle zero h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible z-10 text-4xl">
                 0
             </div>
 
             <div class="column flex gap-20 flex-col">
                 <div class="pair flex gap-20">
                     <div data-node-id="1"
-                        class="circle one h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        class="circle one h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         1
                         <div data-edge="0-1"
-                            class="absolute w-32 h-1 bg-[var(--main,#3b82f6)] -left-full bottom-0 rotate-[-35deg] branch">
+                            class="absolute w-32 h-1 bg-[var(--main)] -left-full bottom-0 rotate-[-35deg] branch">
                         </div>
-                        <div data-edge="1-2"
-                            class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90 branch"></div>
-                        <p class="absolute -left-8 bottom-1 text-yellow-500 text-lg">4</p>
-                        <p class="absolute -bottom-14 right-1 text-yellow-500 text-lg">3</p>
+                        <div data-edge="1-2" class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90 branch">
+                        </div>
+                        <p class="absolute -left-8 bottom-1 text-[var(--main-dark)] text-lg">4</p>
+                        <p class="absolute -bottom-14 right-1 text-[var(--main-dark)] text-lg">3</p>
                     </div>
                     <div data-node-id="4"
-                        class="circle four h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        class="circle four h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         4
-                        <div data-edge="1-4" class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full branch"></div>
-                        <div data-edge="3-4"
-                            class="absolute w-40 h-1 bg-[var(--main,#3b82f6)] -bottom-full rotate-90 branch"></div>
-                        <p class="absolute -left-12 top-1 text-yellow-500 text-lg">6</p>
+                        <div data-edge="1-4" class="absolute w-28 h-1 bg-[var(--main)] -left-full branch"></div>
+                        <div data-edge="3-4" class="absolute w-40 h-1 bg-[var(--main)] -bottom-full rotate-90 branch">
+                        </div>
+                        <p class="absolute -left-12 top-1 text-[var(--main-dark)] text-lg">6</p>
                     </div>
                 </div>
                 <div class="pair flex gap-20">
                     <div data-node-id="2"
-                        class="circle two h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        class="circle two h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         2
                         <div data-edge="0-2"
-                            class="absolute w-28 h-1 bg-[var(--main,#3b82f6)] -left-full top-0 rotate-[35deg] branch">
+                            class="absolute w-28 h-1 bg-[var(--main)] -left-full top-0 rotate-[35deg] branch">
                         </div>
-                        <p class="absolute -left-8 top-1 text-yellow-500 text-lg">8</p>
+                        <p class="absolute -left-8 top-1 text-[var(--main-dark)] text-lg">8</p>
                     </div>
                     <div data-node-id="3"
-                        class="circle three h-20 w-20 flex bg-[var(--main,#3b82f6)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
+                        class="circle three h-20 w-20 flex bg-[var(--main)] rounded-full text-2xl items-center justify-center relative overflow-visible text-4xl">
                         3
-                        <div data-edge="2-3" class="absolute w-24 h-1 bg-[var(--main,#3b82f6)] -left-full branch"></div>
-                        <p class="absolute -left-12 bottom-1 text-yellow-500 text-lg">2</p>
-                        <p class="absolute -top-14 right-1 text-yellow-500 text-lg">10</p>
+                        <div data-edge="2-3" class="absolute w-24 h-1 bg-[var(--main)] -left-full branch"></div>
+                        <p class="absolute -left-12 bottom-1 text-[var(--main-dark)] text-lg">2</p>
+                        <p class="absolute -top-14 right-1 text-[var(--main-dark)] text-lg">10</p>
                     </div>
                 </div>
             </div>
-            <p id="percorso" class="text-lg text-yellow-500" aria-live="polite">Percorso più corto: N/A</p>
+            <p id="percorso" class="text-lg text-[var(--main-dark)]" aria-live="polite">Percorso più corto: N/A</p>
         </main>
-        <p id="graphComparison" class="text-lg text-[#d78c00]" aria-live="polite">Select an algorithm and start the
+        <p id="graphComparison" class="comparison-result text-lg" aria-live="polite">Select an algorithm and start the
             route.</p>
     </section>
 
-    <section class="complexity-section w-full max-w-[1200px] flex flex-col gap-6 pt-8"
+    <section class="complexity-section w-full max-w-[1200px] flex flex-col gap-6 pt-20 pb-20"
         aria-labelledby="complexityHeading">
-        <h2 id="complexityHeading" class="text-2xl font-semibold">Time Complexity</h2>
+        <div>
+            <h2 id="complexityHeading" class="text-2xl font-semibold">Algorithm Performance</h2>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
             <article class="min-w-0 border-t border-[var(--lightLow)] pt-4">
                 <h3 class="text-lg font-semibold text-[var(--main)]">Dijkstra</h3>
                 <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">O((V + E) log V)</p>
                 <div class="complexity-chart">
                     <canvas id="dijkstraComplexityChart" role="img"
-                        aria-label="Dijkstra number of operations grows with the vertex count"></canvas>
+                        aria-label="Dijkstra execution time by number of nodes checked"></canvas>
                 </div>
             </article>
             <article class="min-w-0 border-t border-[var(--lightLow)] pt-4">
@@ -187,11 +184,16 @@
                 <p class="mt-1 mb-4 text-sm text-[var(--light)]/70">O(b^d) worst case</p>
                 <div class="complexity-chart">
                     <canvas id="astarComplexityChart" role="img"
-                        aria-label="A star number of operations grows exponentially with search depth in the worst case"></canvas>
+                        aria-label="A star execution time by number of nodes checked"></canvas>
                 </div>
             </article>
         </div>
     </section>
+
+    <footer class="project-footer w-full max-w-[1200px] p-6">
+        <p class="font-medium">Zaim Halili · Penda Dieng · Mattia Innocenti</p>
+        <p class="mt-1">Informatics project · Class 5G · ITTS O. Belluzzi L. da Vinci</p>
+    </footer>
 
     <!-- Scripts -->
     <script type="module" src="./main.js"></script>

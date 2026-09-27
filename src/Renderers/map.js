@@ -15,6 +15,15 @@ export class MapRenderer {
         this.ctx = this.canvas.getContext("2d");
         this.canvas.width = this.COLS * this.CELL_SIZE;
         this.canvas.height = this.ROWS * this.CELL_SIZE;
+        const palette = getComputedStyle(document.documentElement);
+        this.colors = {
+            start: palette.getPropertyValue("--grid-start").trim(),
+            goal: palette.getPropertyValue("--grid-goal").trim(),
+            path: palette.getPropertyValue("--grid-path").trim(),
+            visited: palette.getPropertyValue("--grid-visited").trim(),
+            wall: palette.getPropertyValue("--grid-wall").trim(),
+            empty: palette.getPropertyValue("--grid-empty").trim()
+        };
 
         this.grid = Array.from({ length: this.ROWS }, () => Array(this.COLS).fill(0));
         this.start = { r: 3, c: 3 };
@@ -240,17 +249,17 @@ export class MapRenderer {
         const key = `${r},${c}`;
 
         if (r === this.start.r && c === this.start.c) {
-            this.ctx.fillStyle = "#22c55e";
+            this.ctx.fillStyle = this.colors.start;
         } else if (r === this.goal.r && c === this.goal.c) {
-            this.ctx.fillStyle = "#ef4444";
+            this.ctx.fillStyle = this.colors.goal;
         } else if (pathSet.has(key)) {
-            this.ctx.fillStyle = "#f59e0b";
+            this.ctx.fillStyle = this.colors.path;
         } else if (visitedSet.has(key)) {
-            this.ctx.fillStyle = "#3b82f6";
+            this.ctx.fillStyle = this.colors.visited;
         } else if (this.grid[r][c] === 1) {
-            this.ctx.fillStyle = "#334155";
+            this.ctx.fillStyle = this.colors.wall;
         } else {
-            this.ctx.fillStyle = "#1e293b";
+            this.ctx.fillStyle = this.colors.empty;
         }
 
         this.ctx.fillRect(x, y, this.CELL_SIZE - 1, this.CELL_SIZE - 1);
