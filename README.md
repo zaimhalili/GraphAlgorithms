@@ -12,6 +12,15 @@ We built these visualizations to explain the basic idea behind route-finding in 
 
 ---
 
+## Demo
+
+Watch the full walkthrough below, or [open/download the MP4](./src/assets/AllAlgorithmsVideo.mp4) directly.
+
+<video controls playsinline preload="metadata" width="100%">
+	<source src="./src/assets/AllAlgorithmsVideo.mp4" type="video/mp4">
+	Your browser does not support embedded video. Use the MP4 link above.
+</video>
+
 ## Project
 
 We built these visualizations to show, in a simplified way, how a digital map can find a route from a starting point to a destination. 
@@ -38,15 +47,6 @@ Dijkstra, A*, and Bidirectional A* explore possible routes, and the animation re
 This helps us compare how the algorithms work and why a heuristic can guide a search toward its destination.
 
 This is an informatics project for **ITTS O. Belluzzi L. da Vinci in Rimini, class 5G**, developed by **Zaim Halili** in collaboration with **Penda Dieng** and **Mattia Innocenti**.
-
-## Demo
-
-Watch the full walkthrough below, or [open/download the MP4](./src/assets/AllAlgorithmsVideo.mp4) directly.
-
-<video controls playsinline preload="metadata" width="100%">
-	<source src="./src/assets/AllAlgorithmsVideo.mp4" type="video/mp4">
-	Your browser does not support embedded video. Use the MP4 link above.
-</video>
 
 ## Screenshots
 
