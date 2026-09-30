@@ -1,7 +1,7 @@
 import { Graph } from '../Models/Graph.js';
 
 export const graph = new Graph([
-    [[1, 4], [2, 8]],          // Node 0
+    [[1, 4], [2, 8]],          // Node 0 // That means node 0 connects to node 1 with a cost of 4, and to node 2 with a cost of 8
     [[0, 4], [4, 6], [2, 3]],  // Node 1
     [[0, 8], [3, 2], [1, 3]],  // Node 2
     [[2, 2], [4, 10]],         // Node 3
