@@ -9,7 +9,7 @@ import { scheduleFrame } from './src/Utils/scheduleFrame.js';
 import { renderComplexityCharts } from './src/Renderers/complexityCharts.js';
 import { dijsktra } from './src/Algorithms/Dijskstra.js';
 import { astar } from './src/Algorithms/AStar.js';
-import { matrix, heuristic } from './src/Data/Graph.js';
+import { graph, heuristic } from './src/Data/Graph.js';
 
 let selectedGridAlgorithm = "Dijkstra";
 let selectedGraphAlgorithm = "Dijkstra";
@@ -63,8 +63,8 @@ export function startGraphRoute() {
     const startTime = performance.now();
     const previous = new Map();
     const result = selectedGraphAlgorithm === "Dijkstra"
-        ? dijsktra(matrix, 0, previous)[inputNumber]
-        : astar(matrix, 0, inputNumber, heuristic, previous);
+        ? dijsktra(graph.adjList, 0, previous)[inputNumber]
+        : astar(graph.adjList, 0, inputNumber, heuristic, previous);
     const elapsed = performance.now() - startTime;
     const route = [inputNumber];
     while (route[0] !== 0 && previous.has(route[0])) {

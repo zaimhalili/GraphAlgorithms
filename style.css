@@ -11,7 +11,7 @@
     --grid-empty: #263a30;
     --grid-wall: #9a4d2e;
     --grid-visited: #588157;
-    --grid-path: #a3b18a;
+    --grid-path: white;
     --grid-start: #16803c;
     --grid-goal: #c83e3e;
     --grid-lines: #dad7cd;
