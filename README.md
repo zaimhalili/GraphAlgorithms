@@ -14,10 +14,10 @@ We built these visualizations to explain the basic idea behind route-finding in 
 
 ## Demo
 
-Watch the full walkthrough below, or [open/download the MP4](./src/assets/AllAlgorithmsVideo.mp4) directly. (The file might be too big)
+Watch the full walkthrough below, or [open/download the MP4](./src/assets/AllAlgorithmsVideo.gif) directly.
 
 <video controls playsinline preload="metadata" width="100%">
-	<source src="./src/assets/AllAlgorithmsVideo.mp4" type="video/mp4">
+	<source src="./src/assets/AllAlgorithmsVideo.gif" type="video/gif">
 	Your browser does not support embedded video. Use the MP4 link above.
 </video>
 
