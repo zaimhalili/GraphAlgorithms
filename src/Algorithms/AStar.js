@@ -1,15 +1,15 @@
 import { MinHeap } from '../Models/MinHeap.js';
 
 export function astar(adj, src, target, heuristicFn, previous = new Map()) {
-    let V = adj.length;
-    let pq = new MinHeap();
-    let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
+    let vertices = adj.length;
+    let heap = new MinHeap();
+    let dist = Array(vertices).fill(Number.MAX_SAFE_INTEGER);
     dist[src] = 0;
 
-    pq.push([dist[src] + heuristicFn(src, target), src]);
+    heap.push([dist[src] + heuristicFn(src, target), src]);
 
-    while (!pq.isEmpty()) {
-        let [f, u] = pq.pop();
+    while (!heap.isEmpty()) {
+        let [f, u] = heap.pop();
 
         if (u === target) {
             return dist[target];
@@ -20,7 +20,7 @@ export function astar(adj, src, target, heuristicFn, previous = new Map()) {
                 dist[v] = dist[u] + w;
                 previous.set(v, u);
                 let fScore = dist[v] + heuristicFn(v, target);
-                pq.push([fScore, v]);
+                heap.push([fScore, v]);
             }
         }
     }

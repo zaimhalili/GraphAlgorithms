@@ -1,15 +1,15 @@
 import { MinHeap } from '../Models/MinHeap.js';
 
 export function dijsktra(adj, src, previous = new Map()) {
-    let V = adj.length;
-    let pq = new MinHeap();
-    let dist = Array(V).fill(Number.MAX_SAFE_INTEGER);
+    let vertices = adj.length;
+    let heap = new MinHeap();
+    let dist = Array(vertices).fill(Number.MAX_SAFE_INTEGER);
 
     dist[src] = 0;
-    pq.push([0, src]);
+    heap.push([0, src]);
 
-    while (!pq.isEmpty()) {
-        let [d, u] = pq.pop();
+    while (!heap.isEmpty()) {
+        let [d, u] = heap.pop();
 
         if (d > dist[u]) continue;
 
@@ -17,7 +17,7 @@ export function dijsktra(adj, src, previous = new Map()) {
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 previous.set(v, u);
-                pq.push([dist[v], v]);
+                heap.push([dist[v], v]);
             }
         }
     }
